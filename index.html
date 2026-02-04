@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Misión Cumpleaños ❤️</title>
+    <title>Las mejores cosas de la vida toman tiempo ❤️</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -24,9 +24,10 @@
     <div id="app-container" class="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center fade-in">
         
         <div id="login-screen">
-            <h1 class="text-2xl font-bold text-pink-600 mb-4">¡Hola Cumpleañera! 🎉</h1>
-            <p class="text-gray-600 mb-6">Para iniciar esta misión, ingresa el código que venía en tu postre.</p>
-            <input type="number" id="access-code" placeholder="Código secreto" class="w-full p-3 border rounded-lg mb-4 text-center text-xl tracking-widest outline-none focus:border-pink-500">
+            <h1 class="text-2xl font-bold text-pink-600 mb-4">¡Hola, amor de mi vida! 🦆❤️🐘 </h1>
+            <p class="text-gray-600 mb-6">¡Has desbloqueado un nuevo nivel!
+                Para continuar, debes ingresar un código, puedes pedirme solo 2 pistas, por correo.</p>
+            <input type="text" id="access-code" placeholder="Escribe la clave..." class="w-full p-3 border rounded-lg mb-4 text-center text-xl tracking-widest outline-none focus:border-pink-500 uppercase">
             <button onclick="login()" class="w-full bg-pink-500 text-white py-3 rounded-lg font-semibold hover:bg-pink-600 transition">Entrar</button>
             <p id="login-error" class="text-red-500 text-sm mt-2 hidden">Código incorrecto 😢</p>
         </div>
@@ -103,21 +104,23 @@
 
         // Hacemos la función login accesible globalmente
         window.login = async () => {
-            const codeInput = document.getElementById('access-code');
-            const code = codeInput.value.trim(); // .trim() evita errores por espacios vacíos
-            
-            if (code !== "1106") {
-                document.getElementById('login-error').classList.remove('hidden');
-                return;
-            }
+    const codeInput = document.getElementById('access-code');
+    // Esto convierte lo que ella escriba a minúsculas para que no importe si usa mayúsculas o no
+    const code = codeInput.value.trim().toLowerCase(); 
+    
+    // CAMBIA "tu palabra secreta" POR LA QUE QUIERAS (todo en minúsculas aquí)
+    if (code !== "SAGRADA FAMILIA") { 
+        document.getElementById('login-error').classList.remove('hidden');
+        return;
+    }
 
-            currentUserId = "novia_" + code;
-            
-            // Feedback visual de carga (opcional)
-            document.querySelector('button').innerText = "Verificando...";
-            
-            await checkStatus();
-        };
+    currentUserId = "novia_" + code.replace(/\s+/g, ''); // Esto crea un ID único sin espacios
+    
+    // Feedback visual de carga (opcional)
+    document.querySelector('button').innerText = "Verificando...";
+    
+    await checkStatus();
+};
 
         async function checkStatus() {
             try {
@@ -180,7 +183,7 @@
                     loadQuestion(qIndex + 1);
                 }
             } else {
-                const releaseTime = new Date(Date.now() + 10 * 60 * 1000); 
+                const releaseTime = new Date(Date.now() + 120 * 60 * 1000); 
                 await updateDoc(docRef, { blockedUntil: releaseTime });
                 showBlockScreen(releaseTime.getTime());
             }
