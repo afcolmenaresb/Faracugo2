@@ -92,8 +92,19 @@
                 correct: 2
             },
             {
-                q: "Si pudiéramos vivir en una película, ¿cuál ha dicho Andrés que sería?",
-                options: ["Bee Movie", "Avengers", "Diario de una pasión"], 
+                q: "Para mí, tu voz es una hermosa melodía que me relaja, que me lleva a un paraíso ¿Rercuerdas cuándo fue la primera vez que te dije que tu voz es relante?",
+                options: ["24 de noviembre de 2025", "25 de noviembre de 2025", "26 de noviembre de 2025", "27 de noviembre de 2025"], 
+                correct: 1 
+            },
+            {
+                q: "¿Y la primera vez que te dije que eres muy perspicaz?",
+                options: ["24 de noviembre de 2025", "25 de noviembre de 2025", "26 de noviembre de 2025", "27 de noviembre de 2025"], 
+                correct: 0 
+            }
+            ,
+            {
+                q: "Sin duda, amor mío, conoceremos muchos lugares de este mundo, juntos. Quiero poder besarte en todos los países ¿Cuál es ese primer lugar que te pregunté si quieres acompañarme?",
+                options: ["Vietnam", "Colombia", "Cuba", "Japón"], 
                 correct: 0 
             }
         ];
@@ -183,7 +194,7 @@
                     loadQuestion(qIndex + 1);
                 }
             } else {
-                const releaseTime = new Date(Date.now() + 120 * 60 * 1000); 
+                const releaseTime = new Date(Date.now() + 60 * 48 * 60 * 1000); 
                 await updateDoc(docRef, { blockedUntil: releaseTime });
                 showBlockScreen(releaseTime.getTime());
             }
