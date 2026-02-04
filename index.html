@@ -8,13 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <style>
-        /* Esto asegura que lo oculto se quede oculto, pase lo que pase */
         .hidden { display: none !important; }
-        
-        /* Un poco de estilo base por si no carga la fuente */
         body { font-family: sans-serif; background-color: #fdf2f8; }
-        
-        /* Animación suave */
         .fade-in { animation: fadeIn 0.5s ease-in; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
@@ -24,28 +19,33 @@
     <div id="app-container" class="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center fade-in">
         
         <div id="login-screen">
-            <h1 class="text-2xl font-bold text-pink-600 mb-4">¡Hola, amor de mi vida! 🦆❤️🐘 </h1>
-            <p class="text-gray-600 mb-6">¡Has desbloqueado un nuevo nivel!
-                Para continuar, debes ingresar un código, puedes pedirme solo 2 pistas, por correo.</p>
+            <h1 class="text-2xl font-bold text-pink-600 mb-4">¡Hola, amor de mi vida! 🦆❤️🐘</h1>
+            <p class="text-gray-600 mb-6">¡Has desbloqueado un nuevo nivel! Para continuar, debes ingresar la clave. (Solo tienes 2 pistas por correo).</p>
             <input type="text" id="access-code" placeholder="Escribe la clave..." class="w-full p-3 border rounded-lg mb-4 text-center text-xl tracking-widest outline-none focus:border-pink-500 uppercase">
             <button onclick="login()" class="w-full bg-pink-500 text-white py-3 rounded-lg font-semibold hover:bg-pink-600 transition">Entrar</button>
-            <p id="login-error" class="text-red-500 text-sm mt-2 hidden">Código incorrecto 😢</p>
+            <p id="login-error" class="text-red-500 text-sm mt-2 hidden">Clave incorrecta 😢</p>
         </div>
 
         <div id="block-screen" class="hidden">
             <div class="text-6xl mb-4">⛔</div>
             <h2 class="text-xl font-bold text-red-500 mb-2">¡Respuesta Incorrecta!</h2>
-            <p class="text-gray-600 mb-4">Debes esperar para intentar de nuevo. No intentes recargar, el tiempo sigue corriendo.</p>
-            <div id="countdown" class="text-3xl font-mono font-bold text-gray-800">00:00</div>
+            <p class="text-gray-600 mb-4">Te has equivocado. Debes esperar para intentar de nuevo.</p>
+            <div id="penalty-countdown" class="text-3xl font-mono font-bold text-gray-800">00:00</div>
+        </div>
+
+        <div id="level-wait-screen" class="hidden">
+            <div class="text-6xl mb-4">⏳❤️</div>
+            <h2 class="text-xl font-bold text-pink-500 mb-2">¡Correcto!</h2>
+            <p class="text-gray-600 mb-4">Has acertado, pero las mejores cosas se hacen esperar. La siguiente pregunta se desbloqueará en:</p>
+            <div id="level-countdown" class="text-2xl font-mono font-bold text-pink-600">00:00:00</div>
         </div>
 
         <div id="quiz-screen" class="hidden">
             <div class="mb-4">
-                <span id="progress-text" class="text-xs font-bold text-pink-400 tracking-widest uppercase">1</span>
+                <span id="progress-text" class="text-xs font-bold text-pink-400 tracking-widest uppercase">MISTERIO 1</span>
             </div>
             <h2 id="question-text" class="text-xl font-bold text-gray-800 mb-6">¿Pregunta?</h2>
-            <div id="options-container" class="space-y-3">
-                </div>
+            <div id="options-container" class="space-y-3"></div>
         </div>
 
         <div id="success-screen" class="hidden">
@@ -71,7 +71,7 @@
             apiKey: "AIzaSyA9PxB95Z9Vli6k93mpI_1Q72cau9IPDv0",
             authDomain: "sorpresacumple-5ef77.firebaseapp.com",
             projectId: "sorpresacumple-5ef77",
-            storageBucket: "sorpresacumple-5ef77.appspot.com", // CORREGIDO (sin https://)
+            storageBucket: "sorpresacumple-5ef77.appspot.com",
             messagingSenderId: "169449956478",
             appId: "1:169449956478:web:11524ccde5969abbd8642f"
         };
@@ -79,7 +79,16 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- PREGUNTAS ---
+        // --- CONFIGURACIÓN DE TIEMPOS (CAMBIA ESTO) ---
+        
+        // Si falla, espera 48 HORAS (Según tu código anterior)
+        const PENALTY_HOURS = 48; 
+
+        // Si acierta, espera 24 HORAS para la siguiente pregunta.
+        // TRUCO: Para que dure 4 meses con 5 preguntas, cambia el 24 por 504 (3 semanas).
+        const SUCCESS_WAIT_HOURS = 98; 
+
+        // --- TUS PREGUNTAS ---
         const questions = [
             {
                 q: "Nuestra primera cita estuvo llena de magia, esa primera vez en que pude verte y escuchar tu voz... ¿Cuál era el color de mi camisa?",
@@ -87,12 +96,12 @@
                 correct: 3 
             },
             {
-                q: "Concerte fue todo un misterio, uno muy hermoso e intrigante en el que tu nombre se iba descubriendo poco a poco ¿Cuál fue el segundo nombre que te puse cuando adiviné?",
+                q: "Conocerte fue todo un misterio, uno muy hermoso e intrigante en el que tu nombre se iba descubriendo poco a poco ¿Cuál fue el segundo nombre que te puse cuando adiviné?",
                 options: ["Rafael", "Camila", "Carlos", "Camilo"], 
                 correct: 2
             },
             {
-                q: "Para mí, tu voz es una hermosa melodía que me relaja, que me lleva a un paraíso ¿Rercuerdas cuándo fue la primera vez que te dije que tu voz es relante?",
+                q: "Para mí, tu voz es una hermosa melodía que me relaja, que me lleva a un paraíso ¿Recuerdas cuándo fue la primera vez que te dije que tu voz es relajante?",
                 options: ["24 de noviembre de 2025", "25 de noviembre de 2025", "26 de noviembre de 2025", "27 de noviembre de 2025"], 
                 correct: 1 
             },
@@ -100,38 +109,30 @@
                 q: "¿Y la primera vez que te dije que eres muy perspicaz?",
                 options: ["24 de noviembre de 2025", "25 de noviembre de 2025", "26 de noviembre de 2025", "27 de noviembre de 2025"], 
                 correct: 0 
-            }
-            ,
+            },
             {
                 q: "Sin duda, amor mío, conoceremos muchos lugares de este mundo, juntos. Quiero poder besarte en todos los países ¿Cuál es ese primer lugar que te pregunté si quieres acompañarme?",
                 options: ["Vietnam", "Colombia", "Cuba", "Japón"], 
-                correct:  3
+                correct: 0 
             }
         ];
 
-        // --- LÓGICA ---
         let currentUserId = null;
         let timerInterval = null;
 
-        // Hacemos la función login accesible globalmente
         window.login = async () => {
-    const codeInput = document.getElementById('access-code');
-    // Esto convierte lo que ella escriba a minúsculas para que no importe si usa mayúsculas o no
-    const code = codeInput.value.trim().toLowerCase(); 
-    
-    // CAMBIA "tu palabra secreta" POR LA QUE QUIERAS (todo en minúsculas aquí)
-    if (code !== "sagrada familia") { 
-        document.getElementById('login-error').classList.remove('hidden');
-        return;
-    }
+            const codeInput = document.getElementById('access-code');
+            const code = codeInput.value.trim().toLowerCase(); 
+            
+            if (code !== "sagrada familia") { 
+                document.getElementById('login-error').classList.remove('hidden');
+                return;
+            }
 
-    currentUserId = "novia_" + code.replace(/\s+/g, ''); // Esto crea un ID único sin espacios
-    
-    // Feedback visual de carga (opcional)
-    document.querySelector('button').innerText = "Verificando...";
-    
-    await checkStatus();
-};
+            currentUserId = "novia_" + code.replace(/\s+/g, '');
+            document.querySelector('button').innerText = "Verificando...";
+            await checkStatus();
+        };
 
         async function checkStatus() {
             try {
@@ -139,14 +140,34 @@
                 const docSnap = await getDoc(docRef);
 
                 if (!docSnap.exists()) {
-                    await setDoc(docRef, { currentQuestion: 0, blockedUntil: null });
+                    // Usuario nuevo
+                    await setDoc(docRef, { currentQuestion: 0, blockedUntil: null, nextLevelUnlock: null });
                     showScreen('quiz-screen');
                     loadQuestion(0);
                 } else {
                     const data = docSnap.data();
-                    if (data.blockedUntil && data.blockedUntil.toMillis() > Date.now()) {
-                        showBlockScreen(data.blockedUntil.toMillis());
-                    } else if (data.currentQuestion >= questions.length) {
+                    const now = Date.now();
+
+                    // 1. Prioridad: Penalización por error
+                    if (data.blockedUntil && data.blockedUntil.toMillis() > now) {
+                        startCountdown(data.blockedUntil.toMillis(), 'penalty-countdown', 'block-screen');
+                        return;
+                    } 
+                    
+                    // 2. Prioridad: Espera por acierto (Cooldown)
+                    if (data.nextLevelUnlock && data.nextLevelUnlock.toMillis() > now) {
+                        // Si ya completó todas, mostramos éxito aunque haya "tiempo de espera" guardado
+                        if (data.currentQuestion >= questions.length) {
+                             showScreen('success-screen');
+                        } else {
+                             // Si no ha terminado, le toca esperar
+                             startCountdown(data.nextLevelUnlock.toMillis(), 'level-countdown', 'level-wait-screen');
+                        }
+                        return;
+                    }
+
+                    // 3. Flujo normal
+                    if (data.currentQuestion >= questions.length) {
                         showScreen('success-screen');
                     } else {
                         showScreen('quiz-screen');
@@ -155,14 +176,11 @@
                 }
                 
                 onSnapshot(docRef, (doc) => {
-                    const data = doc.data();
-                    if (data && data.blockedUntil && data.blockedUntil.toMillis() > Date.now()) {
-                        showBlockScreen(data.blockedUntil.toMillis());
-                    }
+                   // Opcional: recargar si cambia la BD externamente
                 });
             } catch (error) {
-                console.error("Error conectando a Firebase:", error);
-                alert("Hubo un error de conexión. Por favor recarga la página.");
+                console.error(error);
+                alert("Error de conexión. Recarga la página.");
             }
         }
 
@@ -186,48 +204,66 @@
             const docRef = doc(db, "sorpresa", currentUserId);
 
             if (isCorrect) {
+                // --- RESPUESTA CORRECTA ---
+                const unlockTime = new Date(Date.now() + SUCCESS_WAIT_HOURS * 60 * 60 * 1000);
+                
+                // Guardamos avance
+                await updateDoc(docRef, { 
+                    currentQuestion: qIndex + 1,
+                    nextLevelUnlock: unlockTime,
+                    blockedUntil: null 
+                });
+                
                 if (qIndex + 1 >= questions.length) {
-                    await updateDoc(docRef, { currentQuestion: qIndex + 1 });
                     showScreen('success-screen');
                 } else {
-                    await updateDoc(docRef, { currentQuestion: qIndex + 1 });
-                    loadQuestion(qIndex + 1);
+                    // Mostramos pantalla de espera "Cocinando siguiente pista"
+                    startCountdown(unlockTime.getTime(), 'level-countdown', 'level-wait-screen');
                 }
+
             } else {
-                const releaseTime = new Date(Date.now() + 60 * 48 * 60 * 1000); 
+                // --- RESPUESTA INCORRECTA ---
+                const releaseTime = new Date(Date.now() + PENALTY_HOURS * 60 * 60 * 1000); 
                 await updateDoc(docRef, { blockedUntil: releaseTime });
-                showBlockScreen(releaseTime.getTime());
+                startCountdown(releaseTime.getTime(), 'penalty-countdown', 'block-screen');
             }
         }
 
-        function showBlockScreen(timestamp) {
-            showScreen('block-screen');
+        function startCountdown(targetTime, elementId, screenId) {
+            showScreen(screenId);
             if (timerInterval) clearInterval(timerInterval);
             
-            // Función inmediata para no esperar 1 segundo
             const updateTimer = () => {
                 const now = Date.now();
-                const diff = timestamp - now;
+                const diff = targetTime - now;
 
                 if (diff <= 0) {
                     clearInterval(timerInterval);
-                    checkStatus();
+                    checkStatus(); // Tiempo cumplido, recargamos
                     return;
                 }
-
+                
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
                 const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-                document.getElementById('countdown').innerText = 
-                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                let timeString = "";
+                if(days > 0) timeString += `${days}d `;
+                timeString += `${hours}h ${minutes}m ${seconds}s`;
+
+                document.getElementById(elementId).innerText = timeString;
             };
 
-            updateTimer(); // Ejecutar una vez ya
+            updateTimer();
             timerInterval = setInterval(updateTimer, 1000);
         }
 
         function showScreen(id) {
-            ['login-screen', 'block-screen', 'quiz-screen', 'success-screen'].forEach(s => {
-                // Aquí usamos setAttribute para forzar el ocultamiento incluso si Tailwind falla
+            // Lista de todas las pantallas posibles
+            const screens = ['login-screen', 'block-screen', 'level-wait-screen', 'quiz-screen', 'success-screen'];
+            
+            screens.forEach(s => {
                 const el = document.getElementById(s);
                 if (s === id) {
                     el.classList.remove('hidden');
@@ -241,3 +277,4 @@
     </script>
 </body>
 </html>
+
