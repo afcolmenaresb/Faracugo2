@@ -12,6 +12,8 @@
         body { font-family: sans-serif; background-color: #fdf2f8; }
         .fade-in { animation: fadeIn 0.5s ease-in; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* Estilo para la barra de desplazamiento en los recuerdos */
+        .memories-scroll { max-height: 300px; overflow-y: auto; }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
@@ -20,7 +22,7 @@
         
         <div id="login-screen">
             <h1 class="text-2xl font-bold text-pink-600 mb-4">¡Hola, amor de mi vida! 🦆❤️🐘</h1>
-            <p class="text-gray-600 mb-6">¡Has desbloqueado un nuevo nivel! Para continuar, debes ingresar la clave. (Solo tienes 2 pistas por correo).</p>
+            <p class="text-gray-600 mb-6">¡Has desbloqueado un nuevo nivel! Para continuar, debes ingresar la clave. (Solo tienes 2 pistas que puedes preguntarme or correo por correo).</p>
             <input type="text" id="access-code" placeholder="Escribe la clave..." class="w-full p-3 border rounded-lg mb-4 text-center text-xl tracking-widest outline-none focus:border-pink-500 uppercase">
             <button onclick="login()" class="w-full bg-pink-500 text-white py-3 rounded-lg font-semibold hover:bg-pink-600 transition">Entrar</button>
             <p id="login-error" class="text-red-500 text-sm mt-2 hidden">Clave incorrecta 😢</p>
@@ -37,7 +39,12 @@
             <div class="text-6xl mb-4">⏳❤️</div>
             <h2 class="text-xl font-bold text-pink-500 mb-2">¡Correcto!</h2>
             <p class="text-gray-600 mb-4">Has acertado, pero las mejores cosas se hacen esperar. La siguiente pregunta se desbloqueará en:</p>
-            <div id="level-countdown" class="text-2xl font-mono font-bold text-pink-600">00:00:00</div>
+            <div id="level-countdown" class="text-2xl font-mono font-bold text-pink-600 mb-6">00:00:00</div>
+            
+            <div class="border-t border-gray-100 pt-4">
+                <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-3">📜 Recuerdos Desbloqueados</h3>
+                <div id="wait-memories" class="memories-scroll text-left space-y-3 text-sm text-gray-600"></div>
+            </div>
         </div>
 
         <div id="quiz-screen" class="hidden">
@@ -58,6 +65,12 @@
                 <p>🗓️ <strong>14/06:</strong> Rumbo a <span class="text-pink-600 font-bold">Bogotá, Desierto de la Tatacoa y Eje Cafetero ☕</span></p>
                 <p>🗓️ <strong>20/06:</strong> Regreso a casa 🏠</p>
             </div>
+
+            <div class="border-t border-gray-100 pt-4 mb-4">
+                <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-3">📜 Nuestra Historia</h3>
+                <div id="success-memories" class="memories-scroll text-left space-y-3 text-sm text-gray-600"></div>
+            </div>
+
             <p class="italic text-gray-500 text-xs">¡Te amo!</p>
         </div>
 
@@ -79,14 +92,9 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- CONFIGURACIÓN DE TIEMPOS (CAMBIA ESTO) ---
-        
-        // Si falla, espera 48 HORAS (Según tu código anterior)
-        const PENALTY_HOURS = 48; 
-
-        // Si acierta, espera 24 HORAS para la siguiente pregunta.
-        // TRUCO: Para que dure 4 meses con 5 preguntas, cambia el 24 por 504 (3 semanas).
-        const SUCCESS_WAIT_HOURS = 98; 
+        // --- CONFIGURACIÓN DE TIEMPOS ---
+        const PENALTY_HOURS = 0,001; 
+        const SUCCESS_WAIT_HOURS = 0,001; 
 
         // --- TUS PREGUNTAS ---
         const questions = [
@@ -113,7 +121,7 @@
             {
                 q: "Sin duda, amor mío, conoceremos muchos lugares de este mundo, juntos. Quiero poder besarte en todos los países ¿Cuál es ese primer lugar que te pregunté si quieres acompañarme?",
                 options: ["Vietnam", "Colombia", "Cuba", "Japón"], 
-                correct: 0 
+                correct: 3 
             }
         ];
 
@@ -140,7 +148,6 @@
                 const docSnap = await getDoc(docRef);
 
                 if (!docSnap.exists()) {
-                    // Usuario nuevo
                     await setDoc(docRef, { currentQuestion: 0, blockedUntil: null, nextLevelUnlock: null });
                     showScreen('quiz-screen');
                     loadQuestion(0);
@@ -148,7 +155,7 @@
                     const data = docSnap.data();
                     const now = Date.now();
 
-                    // 1. Prioridad: Penalización por error
+                    // 1. Prioridad: Penalización
                     if (data.blockedUntil && data.blockedUntil.toMillis() > now) {
                         startCountdown(data.blockedUntil.toMillis(), 'penalty-countdown', 'block-screen');
                         return;
@@ -156,12 +163,12 @@
                     
                     // 2. Prioridad: Espera por acierto (Cooldown)
                     if (data.nextLevelUnlock && data.nextLevelUnlock.toMillis() > now) {
-                        // Si ya completó todas, mostramos éxito aunque haya "tiempo de espera" guardado
                         if (data.currentQuestion >= questions.length) {
                              showScreen('success-screen');
+                             renderMemories(questions.length, 'success-memories');
                         } else {
-                             // Si no ha terminado, le toca esperar
                              startCountdown(data.nextLevelUnlock.toMillis(), 'level-countdown', 'level-wait-screen');
+                             renderMemories(data.currentQuestion, 'wait-memories');
                         }
                         return;
                     }
@@ -169,6 +176,7 @@
                     // 3. Flujo normal
                     if (data.currentQuestion >= questions.length) {
                         showScreen('success-screen');
+                        renderMemories(questions.length, 'success-memories');
                     } else {
                         showScreen('quiz-screen');
                         loadQuestion(data.currentQuestion);
@@ -176,16 +184,41 @@
                 }
                 
                 onSnapshot(docRef, (doc) => {
-                   // Opcional: recargar si cambia la BD externamente
+                   // Escuchar cambios
                 });
             } catch (error) {
                 console.error(error);
-                alert("Error de conexión. Recarga la página.");
+                alert("Error de conexión. Intenta abrirlo en modo Incógnito o verifica tu internet.");
+            }
+        }
+
+        // --- FUNCIÓN NUEVA: MOSTRAR RECUERDOS ---
+        function renderMemories(completedIndex, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = ''; 
+
+            if (completedIndex === 0) {
+                container.innerHTML = '<p class="italic text-gray-400 text-center text-xs">Aún no hay recuerdos...</p>';
+                return;
+            }
+
+            // Recorremos las preguntas ya completadas
+            for (let i = 0; i < completedIndex; i++) {
+                const q = questions[i];
+                const correctText = q.options[q.correct];
+                
+                const card = document.createElement('div');
+                card.className = "bg-pink-50 p-3 rounded-lg border border-pink-100 mb-2 shadow-sm";
+                card.innerHTML = `
+                    <p class="font-bold text-gray-800 mb-1 text-xs">❤️ ${q.q}</p>
+                    <p class="text-pink-600 font-semibold text-xs">R: ${correctText}</p>
+                `;
+                container.appendChild(card);
             }
         }
 
         function loadQuestion(index) {
-            document.getElementById('progress-text').innerText = `MISTERIO ${index + 1}/${questions.length}`;
+            document.getElementById('progress-text').innerText = `Pregunta ${index + 1}/❤️`;
             document.getElementById('question-text').innerText = questions[index].q;
             const container = document.getElementById('options-container');
             container.innerHTML = '';
@@ -204,10 +237,8 @@
             const docRef = doc(db, "sorpresa", currentUserId);
 
             if (isCorrect) {
-                // --- RESPUESTA CORRECTA ---
                 const unlockTime = new Date(Date.now() + SUCCESS_WAIT_HOURS * 60 * 60 * 1000);
                 
-                // Guardamos avance
                 await updateDoc(docRef, { 
                     currentQuestion: qIndex + 1,
                     nextLevelUnlock: unlockTime,
@@ -216,13 +247,13 @@
                 
                 if (qIndex + 1 >= questions.length) {
                     showScreen('success-screen');
+                    renderMemories(qIndex + 1, 'success-memories');
                 } else {
-                    // Mostramos pantalla de espera "Cocinando siguiente pista"
                     startCountdown(unlockTime.getTime(), 'level-countdown', 'level-wait-screen');
+                    renderMemories(qIndex + 1, 'wait-memories');
                 }
 
             } else {
-                // --- RESPUESTA INCORRECTA ---
                 const releaseTime = new Date(Date.now() + PENALTY_HOURS * 60 * 60 * 1000); 
                 await updateDoc(docRef, { blockedUntil: releaseTime });
                 startCountdown(releaseTime.getTime(), 'penalty-countdown', 'block-screen');
@@ -239,7 +270,7 @@
 
                 if (diff <= 0) {
                     clearInterval(timerInterval);
-                    checkStatus(); // Tiempo cumplido, recargamos
+                    checkStatus();
                     return;
                 }
                 
@@ -260,9 +291,7 @@
         }
 
         function showScreen(id) {
-            // Lista de todas las pantallas posibles
             const screens = ['login-screen', 'block-screen', 'level-wait-screen', 'quiz-screen', 'success-screen'];
-            
             screens.forEach(s => {
                 const el = document.getElementById(s);
                 if (s === id) {
