@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Las mejores cosas de la vida toman tiempo ❤️</title>
-    
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <style>
         .hidden { display: none !important; }
         body { font-family: sans-serif; background-color: #fdf2f8; }
@@ -21,70 +19,51 @@
         
         <div id="login-screen">
             <h1 class="text-2xl font-bold text-pink-600 mb-4">¡Hola, amor de mi vida! 🦆❤️🐘</h1>
-            <p class="text-gray-600 mb-6">¡Has desbloqueado un nuevo nivel! Para continuar, ingresa la clave.</p>
-            <input type="text" id="access-code" placeholder="Escribe la clave..." class="w-full p-3 border rounded-lg mb-4 text-center text-xl tracking-widest outline-none focus:border-pink-500 uppercase">
+            <p class="text-gray-600 mb-6">Para continuar, ingresa la clave secreta:</p>
+            <input type="text" id="access-code" placeholder="CLAVE..." class="w-full p-3 border rounded-lg mb-4 text-center text-xl tracking-widest outline-none focus:border-pink-500 uppercase">
             <button onclick="login()" class="w-full bg-pink-500 text-white py-3 rounded-lg font-semibold hover:bg-pink-600 transition">Entrar</button>
             <p id="login-error" class="text-red-500 text-sm mt-2 hidden">Clave incorrecta 😢</p>
         </div>
 
         <div id="block-screen" class="hidden">
             <div class="text-6xl mb-4">⛔</div>
-            <h2 class="text-xl font-bold text-red-500 mb-2">¡Respuesta Incorrecta!</h2>
-            <p class="text-gray-600 mb-4">Te has equivocado. Debes esperar para intentar de nuevo.</p>
+            <h2 class="text-xl font-bold text-red-500 mb-2">¡Ups! Respuesta Incorrecta</h2>
+            <p class="text-gray-600 mb-4">Debes esperar para intentar de nuevo:</p>
             <div id="penalty-countdown" class="text-3xl font-mono font-bold text-gray-800">00:00</div>
         </div>
 
         <div id="level-wait-screen" class="hidden">
             <div class="text-6xl mb-4">⏳❤️</div>
-            <h2 class="text-xl font-bold text-pink-500 mb-2">¡Correcto!</h2>
-            <p class="text-gray-600 mb-4">Has acertado, pero las mejores cosas se hacen esperar.</p>
-            
-            <div class="text-lg italic text-pink-600 mb-6 animate-pulse">Pronto se revelará el siguiente misterio... ❤️</div>
+            <h2 class="text-xl font-bold text-pink-500 mb-2">¡Lo lograste!</h2>
+            <p class="text-gray-600 mb-4">Pero las mejores cosas se hacen esperar...</p>
+            <div class="text-lg italic text-pink-600 mb-6 animate-pulse">Pronto habrá un nuevo misterio...</div>
 
-            <div class="mt-6 rounded-xl overflow-hidden shadow-sm border border-pink-100">
-                <iframe 
-                    style="border-radius:12px" 
-                    src="https://open.spotify.com/embed/playlist/TU_ID_DE_PLAYLIST" 
-                    width="100%" 
-                    height="152" 
-                    frameBorder="0" 
-                    allowfullscreen="" 
-                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-                    loading="lazy">
-                </iframe>
+            <div class="mt-6 rounded-xl overflow-hidden">
+                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGvYBM3s?utm_source=generator" width="100%" height="152" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
             </div>
             
             <div class="border-t border-gray-100 pt-6 mt-6">
-                <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-3">📜 Recuerdos Desbloqueados</h3>
+                <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-3">📜 Recuerdos</h3>
                 <div id="wait-memories" class="memories-scroll text-left space-y-3 text-sm text-gray-600"></div>
             </div>
         </div>
 
         <div id="quiz-screen" class="hidden">
-            <div class="mb-4">
-                <span id="progress-text" class="text-xs font-bold text-pink-400 tracking-widest uppercase">MISTERIO</span>
-            </div>
-            <h2 id="question-text" class="text-xl font-bold text-gray-800 mb-6">¿Pregunta?</h2>
+            <div id="progress-text" class="text-xs font-bold text-pink-400 mb-2 uppercase">MISTERIO</div>
+            <h2 id="question-text" class="text-xl font-bold text-gray-800 mb-6">¿Cargando...?</h2>
             <div id="options-container" class="space-y-3"></div>
         </div>
 
         <div id="success-screen" class="hidden">
-            <div class="text-6xl mb-4">✈️🎂</div>
+            <div class="text-6xl mb-4">✈️🏝️</div>
             <h1 class="text-3xl font-bold text-pink-600 mb-2">¡SORPRESA!</h1>
-            <p class="text-gray-700 mb-4">Prepara las maletas porque nos vamos...</p>
-            
-            <div class="bg-pink-50 rounded-lg p-4 text-left text-sm space-y-2 mb-4">
-                <p>🗓️ <strong>11/06:</strong> Vuelo a <span class="text-pink-600 font-bold">San Andrés 🏝️</span></p>
-                <p>🗓️ <strong>14/06:</strong> Rumbo a <span class="text-pink-600 font-bold">Bogotá, Desierto de la Tatacoa y Eje Cafetero ☕</span></p>
+            <p class="text-gray-700 mb-4">Prepara las maletas, nuestro viaje es:</p>
+            <div class="bg-pink-50 rounded-lg p-4 text-left text-sm space-y-2 mb-4 border border-pink-100">
+                <p>🗓️ <strong>11/06:</strong> San Andrés 🏝️</p>
+                <p>🗓️ <strong>14/06:</strong> Bogotá, Tatacoa y Eje Cafetero ☕</p>
                 <p>🗓️ <strong>20/06:</strong> Regreso a casa 🏠</p>
             </div>
-
-            <div class="border-t border-gray-100 pt-4 mb-4">
-                <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-3">📜 Nuestra Historia</h3>
-                <div id="success-memories" class="memories-scroll text-left space-y-3 text-sm text-gray-600"></div>
-            </div>
-
-            <p class="italic text-gray-500 text-xs">¡Te amo!</p>
+            <div id="success-memories" class="memories-scroll text-left space-y-3 text-sm text-gray-600 border-t pt-4"></div>
         </div>
 
     </div>
@@ -105,125 +84,91 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const PENALTY_HOURS = 48; 
-        const SUCCESS_WAIT_HOURS = 188; 
-
         const questions = [
-            { q: "Nuestra primera cita estuvo llena de magia... ¿Cuál era el color de mi camisa?", options: ["Verde", "Blanca", "Azul", "No tenía"], correct: 3 },
-            { q: "¿Cuál fue el segundo nombre que te puse cuando adiviné?", options: ["Rafael", "Camila", "Carlos", "Camilo"], correct: 2 },
-            { q: "¿Recuerdas cuándo fue la primera vez que te dije que tu voz es relajante?", options: ["24 de nov", "25 de nov", "26 de nov", "27 de nov"], correct: 1 },
-            { q: "¿Y la primera vez que te dije que eres muy perspicaz?", options: ["24 de nov", "25 de nov", "26 de nov", "27 de nov"], correct: 0 },
-            { q: "¿Cuál es ese primer lugar que te pregunté si quieres acompañarme?", options: ["Vietnam", "Colombia", "Cuba", "Japón"], correct: 3 }
+            { q: "Nuestra primera cita... ¿Cuál era el color de mi camisa?", options: ["Verde", "Blanca", "Azul", "No tenía"], correct: 3 },
+            { q: "¿Cuál fue el segundo nombre que te puse?", options: ["Rafael", "Camila", "Carlos", "Camilo"], correct: 2 },
+            { q: "¿Cuándo te dije que tu voz es relajante?", options: ["24 Nov", "25 Nov", "26 Nov", "27 Nov"], correct: 1 },
+            { q: "¿Cuándo te dije que eres perspicaz?", options: ["24 Nov", "25 Nov", "26 Nov", "27 Nov"], correct: 0 },
+            { q: "¿A qué primer país te invité?", options: ["Vietnam", "Colombia", "Cuba", "Japón"], correct: 3 }
         ];
 
-        let currentUserId = null;
-        let timerInterval = null;
-
         window.login = async () => {
-            const code = document.getElementById('access-code').value.trim().toLowerCase(); 
-            if (code !== "sagrada familia") { 
+            const code = document.getElementById('access-code').value.trim().toLowerCase();
+            if (code !== "sagrada familia") {
                 document.getElementById('login-error').classList.remove('hidden');
                 return;
             }
-            currentUserId = "novia_" + code.replace(/\s+/g, '');
+            window.currentUserId = "novia_" + code.replace(/\s+/g, '');
             await checkStatus();
         };
 
         async function checkStatus() {
-            const docRef = doc(db, "sorpresa", currentUserId);
+            const docRef = doc(db, "sorpresa", window.currentUserId);
             const docSnap = await getDoc(docRef);
+            let data = docSnap.exists() ? docSnap.data() : { currentQuestion: 0 };
+            
+            if (!docSnap.exists()) await setDoc(docRef, data);
 
-            if (!docSnap.exists()) {
-                await setDoc(docRef, { currentQuestion: 0, blockedUntil: null, nextLevelUnlock: null });
-                showScreen('quiz-screen');
-                loadQuestion(0);
+            const now = Date.now();
+            if (data.blockedUntil && data.blockedUntil.toMillis() > now) {
+                startCountdown(data.blockedUntil.toMillis(), 'penalty-countdown', 'block-screen');
+            } else if (data.nextLevelUnlock && data.nextLevelUnlock.toMillis() > now) {
+                showScreen('level-wait-screen');
+                renderMemories(data.currentQuestion, 'wait-memories');
+            } else if (data.currentQuestion >= questions.length) {
+                showScreen('success-screen');
+                renderMemories(questions.length, 'success-memories');
             } else {
-                const data = docSnap.data();
-                const now = Date.now();
-
-                if (data.blockedUntil && data.blockedUntil.toMillis() > now) {
-                    startCountdown(data.blockedUntil.toMillis(), 'penalty-countdown', 'block-screen');
-                    return;
-                } 
-                
-                if (data.nextLevelUnlock && data.nextLevelUnlock.toMillis() > now) {
-                    // No pasamos ID de contador para que no se vea el tiempo
-                    startCountdown(data.nextLevelUnlock.toMillis(), null, 'level-wait-screen');
-                    renderMemories(data.currentQuestion, 'wait-memories');
-                    return;
-                }
-
-                if (data.currentQuestion >= questions.length) {
-                    showScreen('success-screen');
-                    renderMemories(questions.length, 'success-memories');
-                } else {
-                    showScreen('quiz-screen');
-                    loadQuestion(data.currentQuestion);
-                }
+                showScreen('quiz-screen');
+                loadQuestion(data.currentQuestion);
             }
         }
 
-        function loadQuestion(index) {
-            document.getElementById('progress-text').innerText = `Misterio ${index + 1}`;
-            document.getElementById('question-text').innerText = questions[index].q;
-            const container = document.getElementById('options-container');
-            container.innerHTML = '';
-            questions[index].options.forEach((opt, i) => {
-                const btn = document.createElement('button');
-                btn.className = "w-full p-4 text-left border rounded-lg hover:bg-pink-50 transition mb-2";
-                btn.innerText = opt;
-                btn.onclick = () => submitAnswer(index, i);
-                container.appendChild(btn);
+        function loadQuestion(idx) {
+            document.getElementById('progress-text').innerText = `Misterio ${idx + 1}`;
+            document.getElementById('question-text').innerText = questions[idx].q;
+            const cont = document.getElementById('options-container');
+            cont.innerHTML = '';
+            questions[idx].options.forEach((opt, i) => {
+                const b = document.createElement('button');
+                b.className = "w-full p-4 text-left border rounded-lg hover:bg-pink-50 transition";
+                b.innerText = opt;
+                b.onclick = () => submitAnswer(idx, i);
+                cont.appendChild(b);
             });
         }
 
-        async function submitAnswer(qIndex, answerIndex) {
-            const isCorrect = questions[qIndex].correct === answerIndex;
-            const docRef = doc(db, "sorpresa", currentUserId);
-
-            if (isCorrect) {
-                const unlockTime = new Date(Date.now() + SUCCESS_WAIT_HOURS * 60 * 60 * 1000);
-                await updateDoc(docRef, { currentQuestion: qIndex + 1, nextLevelUnlock: unlockTime, blockedUntil: null });
-                if (qIndex + 1 >= questions.length) {
-                    showScreen('success-screen');
-                    renderMemories(qIndex + 1, 'success-memories');
-                } else {
-                    startCountdown(unlockTime.getTime(), null, 'level-wait-screen');
-                    renderMemories(qIndex + 1, 'wait-memories');
-                }
+        async function submitAnswer(qIdx, btnIdx) {
+            const docRef = doc(db, "sorpresa", window.currentUserId);
+            if (questions[qIdx].correct === btnIdx) {
+                const wait = new Date(Date.now() + 188 * 60 * 60 * 1000);
+                await updateDoc(docRef, { currentQuestion: qIdx + 1, nextLevelUnlock: wait, blockedUntil: null });
+                checkStatus();
             } else {
-                const releaseTime = new Date(Date.now() + PENALTY_HOURS * 60 * 60 * 1000); 
-                await updateDoc(docRef, { blockedUntil: releaseTime });
-                startCountdown(releaseTime.getTime(), 'penalty-countdown', 'block-screen');
+                const block = new Date(Date.now() + 48 * 60 * 60 * 1000);
+                await updateDoc(docRef, { blockedUntil: block });
+                checkStatus();
             }
         }
 
-        function startCountdown(targetTime, elementId, screenId) {
-            showScreen(screenId);
-            if (timerInterval) clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                const now = Date.now();
-                const diff = targetTime - now;
-                if (diff <= 0) {
-                    clearInterval(timerInterval);
-                    checkStatus();
-                    return;
-                }
-                const el = document.getElementById(elementId);
-                if (el) {
-                    const h = Math.floor((diff / (1000 * 60 * 60)));
-                    const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                    const s = Math.floor((diff % (1000 * 60)) / 1000);
-                    el.innerText = `${h}h ${m}m ${s}s`;
-                }
+        function startCountdown(target, id, screen) {
+            showScreen(screen);
+            const timer = setInterval(() => {
+                const diff = target - Date.now();
+                if (diff <= 0) { clearInterval(timer); checkStatus(); return; }
+                const h = Math.floor(diff / 3600000);
+                const m = Math.floor((diff % 3600000) / 60000);
+                const s = Math.floor((diff % 60000) / 1000);
+                const el = document.getElementById(id);
+                if (el) el.innerText = `${h}h ${m}m ${s}s`;
             }, 1000);
         }
 
-        function renderMemories(idx, containerId) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = ''; 
+        function renderMemories(idx, id) {
+            const el = document.getElementById(id);
+            el.innerHTML = '';
             for (let i = 0; i < idx; i++) {
-                container.innerHTML += `<div class="bg-pink-50 p-3 rounded-lg border mb-2"><p class="font-bold text-xs text-gray-800">❤️ ${questions[i].q}</p><p class="text-pink-600 text-xs">R: ${questions[i].options[questions[i].correct]}</p></div>`;
+                el.innerHTML += `<div class="bg-pink-50 p-3 rounded-lg border mb-2"><p class="font-bold text-xs">❤️ ${questions[i].q}</p><p class="text-pink-600 text-xs">R: ${questions[i].options[questions[i].correct]}</p></div>`;
             }
         }
 
