@@ -48,7 +48,7 @@
             <div class="bg-pink-50 p-4 rounded-xl border border-pink-100 mb-6 shadow-sm">
                 <p class="text-pink-600 italic animate-pulse mb-2 text-sm">Mientras esperas el siguiente misterio, escucha esto...</p>
                 <audio controls controlsList="nodownload">
-                    <source src="https://drive.google.com/file/d/1U7A7GXQFTXyfNM7RuvTfZEox1HeB3d2R/view?usp=drivesdk" type="audio/mpeg">
+                    <source src="https://docs.google.com/uc?export=download&id=1U7A7GXQFTXyfNM7RuvTfZEox1HeB3d2R" type="audio/mpeg">
                     Tu navegador no soporta el audio.
                 </audio>
             </div>
@@ -108,7 +108,7 @@
         const PENALTY_HOURS = 48; 
         const SUCCESS_WAIT_HOURS = 188; 
 
-        // --- TUS PREGUNTAS (INTACTAS) ---
+        // --- TUS PREGUNTAS ---
         const questions = [
             {
                 q: "Nuestra primera cita estuvo llena de magia, esa primera vez en que pude verte y escuchar tu voz... ¿Cuál era el color de mi camisa?",
@@ -167,19 +167,19 @@
                     const data = docSnap.data();
                     const now = Date.now();
 
-                    // 1. Prioridad: Penalización (Se muestra el tiempo)
+                    // 1. Prioridad: Penalización
                     if (data.blockedUntil && data.blockedUntil.toMillis() > now) {
                         startCountdown(data.blockedUntil.toMillis(), 'penalty-countdown', 'block-screen');
                         return;
                     } 
                     
-                    // 2. Prioridad: Espera por acierto (NO se muestra el tiempo, pero espera)
+                    // 2. Prioridad: Espera por acierto (Cooldown)
                     if (data.nextLevelUnlock && data.nextLevelUnlock.toMillis() > now) {
                         if (data.currentQuestion >= questions.length) {
                              showScreen('success-screen');
                              renderMemories(questions.length, 'success-memories');
                         } else {
-                             // Pasamos null como ID para que cuente el tiempo pero no lo muestre
+                             // Pasamos null para que NO se vea el tiempo, pero siga contando
                              startCountdown(data.nextLevelUnlock.toMillis(), null, 'level-wait-screen');
                              renderMemories(data.currentQuestion, 'wait-memories');
                         }
@@ -205,7 +205,7 @@
             }
         }
 
-        // --- MOSTRAR RECUERDOS ---
+        // --- FUNCIÓN NUEVA: MOSTRAR RECUERDOS ---
         function renderMemories(completedIndex, containerId) {
             const container = document.getElementById(containerId);
             container.innerHTML = ''; 
@@ -215,6 +215,7 @@
                 return;
             }
 
+            // Recorremos las preguntas ya completadas
             for (let i = 0; i < completedIndex; i++) {
                 const q = questions[i];
                 const correctText = q.options[q.correct];
@@ -261,7 +262,6 @@
                     showScreen('success-screen');
                     renderMemories(qIndex + 1, 'success-memories');
                 } else {
-                    // Pasamos null para no mostrar el tiempo
                     startCountdown(unlockTime.getTime(), null, 'level-wait-screen');
                     renderMemories(qIndex + 1, 'wait-memories');
                 }
@@ -269,7 +269,6 @@
             } else {
                 const releaseTime = new Date(Date.now() + PENALTY_HOURS * 60 * 60 * 1000); 
                 await updateDoc(docRef, { blockedUntil: releaseTime });
-                // Aquí sí pasamos el ID 'penalty-countdown' para mostrar el tiempo
                 startCountdown(releaseTime.getTime(), 'penalty-countdown', 'block-screen');
             }
         }
@@ -288,8 +287,8 @@
                     return;
                 }
                 
-                // Solo actualizamos el texto SI nos pasaron un ID (para la penalización)
-                // Si elementId es null (en el acierto), el contador corre pero no escribe nada
+                // Solo escribimos el tiempo si nos pasaron un ID (para la penalización)
+                // Si es NULL (acierto), el reloj corre en silencio
                 if (elementId) {
                     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
                     const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
