@@ -48,7 +48,7 @@
             <div class="bg-pink-50 p-4 rounded-xl border border-pink-100 mb-6 shadow-sm">
                 <p class="text-pink-600 italic animate-pulse mb-2 text-sm">Mientras esperas el siguiente misterio, escucha esto...</p>
                 <audio controls controlsList="nodownload">
-                    <source src="https://drive.google.com/file/d/1NORgMYTvg7WMfd1dMa-1k50gdU2jB8Rp/view?usp=drivesdk" type="audio/mpeg">
+                    <source src="https://docs.google.com/uc?export=download&id=1NORgMYTvg7WMfd1dMa-1k50gdU2jB8Rp" type="audio/mpeg">
                     Tu navegador no soporta el audio.
                 </audio>
             </div>
@@ -179,7 +179,7 @@
                              showScreen('success-screen');
                              renderMemories(questions.length, 'success-memories');
                         } else {
-                             // Pasamos null para que NO se vea el tiempo, pero siga contando
+                             // Pasamos null para que NO se vea el tiempo
                              startCountdown(data.nextLevelUnlock.toMillis(), null, 'level-wait-screen');
                              renderMemories(data.currentQuestion, 'wait-memories');
                         }
@@ -287,8 +287,7 @@
                     return;
                 }
                 
-                // Solo escribimos el tiempo si nos pasaron un ID (para la penalización)
-                // Si es NULL (acierto), el reloj corre en silencio
+                // Solo mostramos el tiempo si se pasa un ID (para la penalización)
                 if (elementId) {
                     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
                     const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
