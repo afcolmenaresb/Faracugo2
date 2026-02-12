@@ -10,7 +10,7 @@
         body { font-family: sans-serif; background-color: #fdf2f8; }
         .fade-in { animation: fadeIn 0.5s ease-in; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .memories-scroll { max-height: 300px; overflow-y: auto; }
+        .memories-scroll { max-height: 250px; overflow-y: auto; }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
@@ -18,54 +18,62 @@
     <div id="app-container" class="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center fade-in">
         
         <div id="login-screen">
-            <h1 class="text-2xl font-bold text-pink-600 mb-4">¡Hola, amor de mi vida! 🦆❤️🐘</h1>
-            <p class="text-gray-600 mb-6">Para continuar, ingresa la clave secreta:</p>
-            <input type="text" id="access-code" placeholder="CLAVE..." class="w-full p-3 border rounded-lg mb-4 text-center text-xl tracking-widest outline-none focus:border-pink-500 uppercase">
+            <h1 class="text-2xl font-bold text-pink-600 mb-4">¡Hola, amor! 🦆❤️🐘</h1>
+            <p class="text-gray-600 mb-6">Ingresa la clave para continuar:</p>
+            <input type="text" id="access-code" placeholder="CLAVE..." class="w-full p-3 border rounded-lg mb-4 text-center outline-none focus:border-pink-500 uppercase font-bold">
             <button onclick="login()" class="w-full bg-pink-500 text-white py-3 rounded-lg font-semibold hover:bg-pink-600 transition">Entrar</button>
             <p id="login-error" class="text-red-500 text-sm mt-2 hidden">Clave incorrecta 😢</p>
         </div>
 
         <div id="block-screen" class="hidden">
             <div class="text-6xl mb-4">⛔</div>
-            <h2 class="text-xl font-bold text-red-500 mb-2">¡Ups! Respuesta Incorrecta</h2>
-            <p class="text-gray-600 mb-4">Debes esperar para intentar de nuevo:</p>
+            <h2 class="text-xl font-bold text-red-500 mb-2">¡Respuesta Incorrecta!</h2>
+            <p class="text-gray-600 mb-4">Te has equivocado. Debes esperar para intentar de nuevo:</p>
             <div id="penalty-countdown" class="text-3xl font-mono font-bold text-gray-800">00:00</div>
         </div>
 
         <div id="level-wait-screen" class="hidden">
             <div class="text-6xl mb-4">⏳❤️</div>
-            <h2 class="text-xl font-bold text-pink-500 mb-2">¡Lo lograste!</h2>
+            <h2 class="text-xl font-bold text-pink-500 mb-2">¡Correcto!</h2>
             <p class="text-gray-600 mb-4">Pero las mejores cosas se hacen esperar...</p>
-            <div class="text-lg italic text-pink-600 mb-6 animate-pulse">Pronto habrá un nuevo misterio...</div>
+            <p class="text-pink-600 italic animate-pulse mb-6">Pronto habrá un nuevo misterio.</p>
 
-            <div class="mt-6 rounded-xl overflow-hidden">
-                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGvYBM3s?utm_source=generator" width="100%" height="152" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            <div class="rounded-xl overflow-hidden mb-6 shadow-md">
+                <iframe 
+                    style="border-radius:12px" 
+                    src="https://open.spotify.com/playlist/37i9dQZF1DXcBWIGvYBM3s?si=...1" 
+                    width="100%" 
+                    height="152" 
+                    frameBorder="0" 
+                    allowfullscreen="" 
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                    loading="lazy">
+                </iframe>
             </div>
             
-            <div class="border-t border-gray-100 pt-6 mt-6">
-                <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-3">📜 Recuerdos</h3>
-                <div id="wait-memories" class="memories-scroll text-left space-y-3 text-sm text-gray-600"></div>
+            <div class="border-t pt-4">
+                <h3 class="text-xs font-bold text-gray-400 uppercase mb-3">📜 Recuerdos Desbloqueados</h3>
+                <div id="wait-memories" class="memories-scroll text-left space-y-2 text-sm text-gray-600"></div>
             </div>
         </div>
 
         <div id="quiz-screen" class="hidden">
-            <div id="progress-text" class="text-xs font-bold text-pink-400 mb-2 uppercase">MISTERIO</div>
-            <h2 id="question-text" class="text-xl font-bold text-gray-800 mb-6">¿Cargando...?</h2>
+            <div id="progress-text" class="text-xs font-bold text-pink-400 mb-2 uppercase">Misterio</div>
+            <h2 id="question-text" class="text-xl font-bold text-gray-800 mb-6">---</h2>
             <div id="options-container" class="space-y-3"></div>
         </div>
 
         <div id="success-screen" class="hidden">
             <div class="text-6xl mb-4">✈️🏝️</div>
             <h1 class="text-3xl font-bold text-pink-600 mb-2">¡SORPRESA!</h1>
-            <p class="text-gray-700 mb-4">Prepara las maletas, nuestro viaje es:</p>
-            <div class="bg-pink-50 rounded-lg p-4 text-left text-sm space-y-2 mb-4 border border-pink-100">
-                <p>🗓️ <strong>11/06:</strong> San Andrés 🏝️</p>
-                <p>🗓️ <strong>14/06:</strong> Bogotá, Tatacoa y Eje Cafetero ☕</p>
-                <p>🗓️ <strong>20/06:</strong> Regreso a casa 🏠</p>
+            <p class="text-gray-700 mb-4">¡Prepara las maletas!</p>
+            <div class="bg-pink-50 p-4 rounded-lg text-left text-sm mb-4 border border-pink-100">
+                <p>🗓️ 11/06: San Andrés 🏝️</p>
+                <p>🗓️ 14/06: Bogotá, Tatacoa y Eje Cafetero ☕</p>
+                <p>🗓️ 20/06: Regreso 🏠</p>
             </div>
-            <div id="success-memories" class="memories-scroll text-left space-y-3 text-sm text-gray-600 border-t pt-4"></div>
+            <div id="success-memories" class="memories-scroll text-left space-y-2 text-sm text-gray-600 border-t pt-4"></div>
         </div>
-
     </div>
 
     <script type="module">
@@ -93,25 +101,23 @@
         ];
 
         window.login = async () => {
-            const code = document.getElementById('access-code').value.trim().toLowerCase();
-            if (code !== "sagrada familia") {
+            const val = document.getElementById('access-code').value.trim().toLowerCase();
+            if (val !== "sagrada familia") {
                 document.getElementById('login-error').classList.remove('hidden');
                 return;
             }
-            window.currentUserId = "novia_" + code.replace(/\s+/g, '');
+            window.uid = "novia_" + val.replace(/\s+/g, '');
             await checkStatus();
         };
 
         async function checkStatus() {
-            const docRef = doc(db, "sorpresa", window.currentUserId);
-            const docSnap = await getDoc(docRef);
-            let data = docSnap.exists() ? docSnap.data() : { currentQuestion: 0 };
-            
-            if (!docSnap.exists()) await setDoc(docRef, data);
+            const snap = await getDoc(doc(db, "sorpresa", window.uid));
+            let data = snap.exists() ? snap.data() : { currentQuestion: 0 };
+            if (!snap.exists()) await setDoc(doc(db, "sorpresa", window.uid), data);
 
             const now = Date.now();
             if (data.blockedUntil && data.blockedUntil.toMillis() > now) {
-                startCountdown(data.blockedUntil.toMillis(), 'penalty-countdown', 'block-screen');
+                runTimer(data.blockedUntil.toMillis(), 'penalty-countdown', 'block-screen');
             } else if (data.nextLevelUnlock && data.nextLevelUnlock.toMillis() > now) {
                 showScreen('level-wait-screen');
                 renderMemories(data.currentQuestion, 'wait-memories');
@@ -120,46 +126,43 @@
                 renderMemories(questions.length, 'success-memories');
             } else {
                 showScreen('quiz-screen');
-                loadQuestion(data.currentQuestion);
+                displayQuestion(data.currentQuestion);
             }
         }
 
-        function loadQuestion(idx) {
+        function displayQuestion(idx) {
             document.getElementById('progress-text').innerText = `Misterio ${idx + 1}`;
             document.getElementById('question-text').innerText = questions[idx].q;
-            const cont = document.getElementById('options-container');
-            cont.innerHTML = '';
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
             questions[idx].options.forEach((opt, i) => {
-                const b = document.createElement('button');
-                b.className = "w-full p-4 text-left border rounded-lg hover:bg-pink-50 transition";
-                b.innerText = opt;
-                b.onclick = () => submitAnswer(idx, i);
-                cont.appendChild(b);
+                const btn = document.createElement('button');
+                btn.className = "w-full p-4 text-left border rounded-lg hover:bg-pink-50 transition font-medium";
+                btn.innerText = opt;
+                btn.onclick = async () => {
+                    const docRef = doc(db, "sorpresa", window.uid);
+                    if (questions[idx].correct === i) {
+                        const wait = new Date(Date.now() + 188 * 3600000);
+                        await updateDoc(docRef, { currentQuestion: idx + 1, nextLevelUnlock: wait, blockedUntil: null });
+                    } else {
+                        const block = new Date(Date.now() + 48 * 3600000);
+                        await updateDoc(docRef, { blockedUntil: block });
+                    }
+                    checkStatus();
+                };
+                container.appendChild(btn);
             });
         }
 
-        async function submitAnswer(qIdx, btnIdx) {
-            const docRef = doc(db, "sorpresa", window.currentUserId);
-            if (questions[qIdx].correct === btnIdx) {
-                const wait = new Date(Date.now() + 188 * 60 * 60 * 1000);
-                await updateDoc(docRef, { currentQuestion: qIdx + 1, nextLevelUnlock: wait, blockedUntil: null });
-                checkStatus();
-            } else {
-                const block = new Date(Date.now() + 48 * 60 * 60 * 1000);
-                await updateDoc(docRef, { blockedUntil: block });
-                checkStatus();
-            }
-        }
-
-        function startCountdown(target, id, screen) {
+        function runTimer(target, elId, screen) {
             showScreen(screen);
-            const timer = setInterval(() => {
+            const t = setInterval(() => {
                 const diff = target - Date.now();
-                if (diff <= 0) { clearInterval(timer); checkStatus(); return; }
+                if (diff <= 0) { clearInterval(t); checkStatus(); return; }
                 const h = Math.floor(diff / 3600000);
                 const m = Math.floor((diff % 3600000) / 60000);
                 const s = Math.floor((diff % 60000) / 1000);
-                const el = document.getElementById(id);
+                const el = document.getElementById(elId);
                 if (el) el.innerText = `${h}h ${m}m ${s}s`;
             }, 1000);
         }
@@ -168,7 +171,7 @@
             const el = document.getElementById(id);
             el.innerHTML = '';
             for (let i = 0; i < idx; i++) {
-                el.innerHTML += `<div class="bg-pink-50 p-3 rounded-lg border mb-2"><p class="font-bold text-xs">❤️ ${questions[i].q}</p><p class="text-pink-600 text-xs">R: ${questions[i].options[questions[i].correct]}</p></div>`;
+                el.innerHTML += `<div class="bg-pink-50 p-3 rounded-lg border mb-2 text-xs"><b>❤️ ${questions[i].q}</b><br><span class="text-pink-600">R: ${questions[i].options[questions[i].correct]}</span></div>`;
             }
         }
 
