@@ -12,8 +12,22 @@
         body { font-family: sans-serif; background-color: #fdf2f8; }
         .fade-in { animation: fadeIn 0.5s ease-in; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        /* Estilo para la barra de desplazamiento en los recuerdos */
         .memories-scroll { max-height: 300px; overflow-y: auto; }
+        
+        /* Barra de progreso para la sorpresa de 20s */
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background-color: #e5e7eb;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: #db2777;
+            width: 100%;
+            transition: width 1s linear;
+        }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
@@ -26,6 +40,20 @@
             <input type="text" id="access-code" placeholder="Escribe la clave..." class="w-full p-3 border rounded-lg mb-4 text-center text-xl tracking-widest outline-none focus:border-pink-500 uppercase">
             <button onclick="login()" class="w-full bg-pink-500 text-white py-3 rounded-lg font-semibold hover:bg-pink-600 transition">Entrar</button>
             <p id="login-error" class="text-red-500 text-sm mt-2 hidden">Clave incorrecta 😢</p>
+        </div>
+
+        <div id="one-time-surprise-screen" class="hidden">
+            <h2 class="text-xl font-bold text-pink-600 mb-4 animate-bounce">✨ ¡SORPRESA ESPECIAL! ✨</h2>
+            <p class="text-gray-600 mb-4 text-sm">Esta imagen solo aparecerá una vez... Te amo.</p>
+            
+            <div class="rounded-lg overflow-hidden shadow-lg border-4 border-pink-200 mb-4">
+                <img src="https://drive.google.com/file/d/1ybcK-o-xsji8M6B0F4CKgJaP934OqCPm/view?usp=drivesdk" class="w-full h-auto object-cover" alt="Sorpresa única">
+            </div>
+
+            <div class="progress-bar mb-2">
+                <div id="surprise-timer-bar" class="progress-fill"></div>
+            </div>
+            <p class="text-xs text-gray-400">Desaparece en <span id="surprise-countdown">20</span>s</p>
         </div>
 
         <div id="block-screen" class="hidden">
@@ -101,11 +129,9 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- CONFIGURACIÓN DE TIEMPOS ---
         const PENALTY_HOURS = 48; 
         const SUCCESS_WAIT_HOURS = 188; 
 
-        // --- TUS PREGUNTAS ---
         const questions = [
             {
                 q: "Nuestra primera cita estuvo llena de magia, esa primera vez en que pude verte y escuchar tu voz... ¿Cuál era el color de mi camisa?",
@@ -157,51 +183,96 @@
                 const docSnap = await getDoc(docRef);
 
                 if (!docSnap.exists()) {
-                    await setDoc(docRef, { currentQuestion: 0, blockedUntil: null, nextLevelUnlock: null });
+                    // Inicializamos incluyendo el campo 'sorpresaVista' en false
+                    await setDoc(docRef, { 
+                        currentQuestion: 0, 
+                        blockedUntil: null, 
+                        nextLevelUnlock: null,
+                        sorpresaVista: false 
+                    });
                     showScreen('quiz-screen');
                     loadQuestion(0);
                 } else {
                     const data = docSnap.data();
-                    const now = Date.now();
 
-                    // 1. Prioridad: Penalización
-                    if (data.blockedUntil && data.blockedUntil.toMillis() > now) {
-                        startCountdown(data.blockedUntil.toMillis(), 'penalty-countdown', 'block-screen');
-                        return;
-                    } 
-                    
-                    // 2. Prioridad: Espera por acierto (Cooldown)
-                    if (data.nextLevelUnlock && data.nextLevelUnlock.toMillis() > now) {
-                        if (data.currentQuestion >= questions.length) {
-                             showScreen('success-screen');
-                             renderMemories(questions.length, 'success-memories');
-                        } else {
-                             startCountdown(data.nextLevelUnlock.toMillis(), null, 'level-wait-screen');
-                             renderMemories(data.currentQuestion, 'wait-memories');
-                        }
-                        return;
+                    // --- LÓGICA DE SORPRESA ÚNICA ---
+                    // Si nunca ha visto la sorpresa (es false o no existe el campo)
+                    if (data.sorpresaVista !== true) {
+                        // Marcamos como vista en la base de datos inmediatamente
+                        await updateDoc(docRef, { sorpresaVista: true });
+                        
+                        // Mostramos la sorpresa
+                        mostrarSorpresaUnica(() => {
+                            // Cuando termine la sorpresa, continuamos el flujo normal
+                            procesarFlujoNormal(data);
+                        });
+                        return; // Detenemos aquí para que vea la sorpresa primero
                     }
 
-                    // 3. Flujo normal
-                    if (data.currentQuestion >= questions.length) {
-                        showScreen('success-screen');
-                        renderMemories(questions.length, 'success-memories');
-                    } else {
-                        showScreen('quiz-screen');
-                        loadQuestion(data.currentQuestion);
-                    }
+                    // Si ya la vio, seguimos normal
+                    procesarFlujoNormal(data);
                 }
                 
-                onSnapshot(docRef, (doc) => {
-                   // Escuchar cambios
-                });
             } catch (error) {
                 console.error(error);
                 alert("Error de conexión. Intenta abrirlo en modo Incógnito o verifica tu internet.");
             }
         }
 
-        // --- FUNCIÓN NUEVA: MOSTRAR RECUERDOS ---
+        // --- NUEVA FUNCIÓN: MOSTRAR SORPRESA 20s ---
+        function mostrarSorpresaUnica(callback) {
+            showScreen('one-time-surprise-screen');
+            let timeLeft = 60;
+            const timerEl = document.getElementById('surprise-countdown');
+            const barEl = document.getElementById('surprise-timer-bar');
+            
+            // Animación de la barra
+            barEl.style.width = '100%';
+            
+            const interval = setInterval(() => {
+                timeLeft--;
+                timerEl.innerText = timeLeft;
+                barEl.style.width = `${(timeLeft / 60) * 100}%`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    callback(); // Ejecutar lo que sigue (el juego)
+                }
+            }, 1000);
+        }
+
+        // --- LÓGICA ORIGINAL DEL JUEGO (REFACTORIZADA) ---
+        function procesarFlujoNormal(data) {
+            const now = Date.now();
+
+            // 1. Prioridad: Penalización
+            if (data.blockedUntil && data.blockedUntil.toMillis() > now) {
+                startCountdown(data.blockedUntil.toMillis(), 'penalty-countdown', 'block-screen');
+                return;
+            } 
+            
+            // 2. Prioridad: Espera por acierto (Cooldown)
+            if (data.nextLevelUnlock && data.nextLevelUnlock.toMillis() > now) {
+                if (data.currentQuestion >= questions.length) {
+                        showScreen('success-screen');
+                        renderMemories(questions.length, 'success-memories');
+                } else {
+                        startCountdown(data.nextLevelUnlock.toMillis(), null, 'level-wait-screen');
+                        renderMemories(data.currentQuestion, 'wait-memories');
+                }
+                return;
+            }
+
+            // 3. Flujo normal
+            if (data.currentQuestion >= questions.length) {
+                showScreen('success-screen');
+                renderMemories(questions.length, 'success-memories');
+            } else {
+                showScreen('quiz-screen');
+                loadQuestion(data.currentQuestion);
+            }
+        }
+
         function renderMemories(completedIndex, containerId) {
             const container = document.getElementById(containerId);
             container.innerHTML = ''; 
@@ -211,7 +282,6 @@
                 return;
             }
 
-            // Recorremos las preguntas ya completadas
             for (let i = 0; i < completedIndex; i++) {
                 const q = questions[i];
                 const correctText = q.options[q.correct];
@@ -303,7 +373,7 @@
         }
 
         function showScreen(id) {
-            const screens = ['login-screen', 'block-screen', 'level-wait-screen', 'quiz-screen', 'success-screen'];
+            const screens = ['login-screen', 'block-screen', 'level-wait-screen', 'quiz-screen', 'success-screen', 'one-time-surprise-screen'];
             screens.forEach(s => {
                 const el = document.getElementById(s);
                 if (s === id) {
