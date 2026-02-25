@@ -42,25 +42,21 @@
             <p id="login-error" class="text-red-500 text-sm mt-2 hidden">Clave incorrecta 😢</p>
         </div>
 
-                <div id="one-time-surprise-screen" class="hidden">
-            <h2 class="text-xl font-bold text-pink-600 mb-4 animate-bounce">✨ ¡SORPRESA ESPECIAL! ✨</h2>
-            <p class="text-gray-600 mb-4 text-sm">Esta imagen solo aparecerá una vez... Te amo.</p>
+        <div id="one-time-surprise-screen" class="hidden">
+            <h2 class="text-xl font-bold text-pink-600 mb-4 animate-bounce">✨ ¡SECRETO REVELADO! ✨</h2>
+            <p class="text-gray-600 mb-6 text-sm">Anota esto rápido. Solo lo verás esta vez... es parte de nuestro destino.</p>
             
-            <div class="rounded-lg overflow-hidden shadow-lg border-4 border-pink-200 mb-4" style="height: 500px;">
-                <iframe 
-                    src="https://drive.google.com/file/d/1ybcK-o-xsji8M6B0F4CKgJaP934OqCPm/preview" 
-                    width="100%" 
-                    height="100%" 
-                    style="border:none;">
-                </iframe>
+            <div class="bg-pink-50 rounded-xl p-8 shadow-inner border-2 border-dashed border-pink-400 mb-8 flex items-center justify-center">
+                <span class="text-5xl font-mono font-black text-pink-600 tracking-[0.2em] ml-2">
+                    AIAEC😘
+                </span>
             </div>
 
             <div class="progress-bar mb-2">
                 <div id="surprise-timer-bar" class="progress-fill"></div>
             </div>
-            <p class="text-xs text-gray-400">Desaparece en <span id="surprise-countdown">60</span>s</p>
+            <p class="text-xs text-gray-400">Se autodestruye en <span id="surprise-countdown">60</span>s</p>
         </div>
-
 
         <div id="block-screen" class="hidden">
             <div class="text-6xl mb-4">⛔</div>
@@ -189,7 +185,6 @@
                 const docSnap = await getDoc(docRef);
 
                 if (!docSnap.exists()) {
-                    // Inicializamos incluyendo el campo 'sorpresaVista' en false
                     await setDoc(docRef, { 
                         currentQuestion: 0, 
                         blockedUntil: null, 
@@ -201,21 +196,15 @@
                 } else {
                     const data = docSnap.data();
 
-                    // --- LÓGICA DE SORPRESA ÚNICA ---
-                    // Si nunca ha visto la sorpresa (es false o no existe el campo)
                     if (data.sorpresaVista !== true) {
-                        // Marcamos como vista en la base de datos inmediatamente
                         await updateDoc(docRef, { sorpresaVista: true });
                         
-                        // Mostramos la sorpresa
                         mostrarSorpresaUnica(() => {
-                            // Cuando termine la sorpresa, continuamos el flujo normal
                             procesarFlujoNormal(data);
                         });
-                        return; // Detenemos aquí para que vea la sorpresa primero
+                        return; 
                     }
 
-                    // Si ya la vio, seguimos normal
                     procesarFlujoNormal(data);
                 }
                 
@@ -225,14 +214,12 @@
             }
         }
 
-        // --- NUEVA FUNCIÓN: MOSTRAR SORPRESA 60s ---
         function mostrarSorpresaUnica(callback) {
             showScreen('one-time-surprise-screen');
-            let timeLeft = 60; // TIEMPO 60 SEGUNDOS
+            let timeLeft = 60; 
             const timerEl = document.getElementById('surprise-countdown');
             const barEl = document.getElementById('surprise-timer-bar');
             
-            // Animación de la barra
             barEl.style.width = '100%';
             
             const interval = setInterval(() => {
@@ -242,22 +229,19 @@
                 
                 if (timeLeft <= 0) {
                     clearInterval(interval);
-                    callback(); // Ejecutar lo que sigue (el juego)
+                    callback(); 
                 }
             }, 1000);
         }
 
-        // --- LÓGICA ORIGINAL DEL JUEGO (REFACTORIZADA) ---
         function procesarFlujoNormal(data) {
             const now = Date.now();
 
-            // 1. Prioridad: Penalización
             if (data.blockedUntil && data.blockedUntil.toMillis() > now) {
                 startCountdown(data.blockedUntil.toMillis(), 'penalty-countdown', 'block-screen');
                 return;
             } 
             
-            // 2. Prioridad: Espera por acierto (Cooldown)
             if (data.nextLevelUnlock && data.nextLevelUnlock.toMillis() > now) {
                 if (data.currentQuestion >= questions.length) {
                         showScreen('success-screen');
@@ -269,7 +253,6 @@
                 return;
             }
 
-            // 3. Flujo normal
             if (data.currentQuestion >= questions.length) {
                 showScreen('success-screen');
                 renderMemories(questions.length, 'success-memories');
