@@ -44,7 +44,7 @@
 
         <div id="one-time-surprise-screen" class="hidden">
             <h2 class="text-xl font-bold text-pink-600 mb-4 animate-bounce">✨ ¡SECRETO REVELADO! ✨</h2>
-            <p class="text-gray-600 mb-6 text-sm">Anota esto rápido. Solo lo verás esta vez... es parte de nuestro....</p>
+            <p class="text-gray-600 mb-6 text-sm">Anota esto rápido. Solo lo verás esta vez... es parte de nuestro destino.</p>
             
             <div class="bg-pink-50 rounded-xl p-8 shadow-inner border-2 border-dashed border-pink-400 mb-8 flex items-center justify-center">
                 <span class="text-5xl font-mono font-black text-pink-600 tracking-[0.2em] ml-2">
@@ -55,7 +55,7 @@
             <div class="progress-bar mb-2">
                 <div id="surprise-timer-bar" class="progress-fill"></div>
             </div>
-            <p class="text-xs text-gray-400">Se autodestruye en <span id="surprise-countdown">60</span>s</p>
+            <p class="text-xs text-gray-400">Se autodestruye en <span id="surprise-countdown">20</span>s</p>
         </div>
 
         <div id="block-screen" class="hidden">
@@ -214,9 +214,10 @@
             }
         }
 
+        // --- CORRECCIÓN AQUÍ: Tiempo y división ajustados a 20s ---
         function mostrarSorpresaUnica(callback) {
             showScreen('one-time-surprise-screen');
-            let timeLeft = 60; 
+            let timeLeft = 20; 
             const timerEl = document.getElementById('surprise-countdown');
             const barEl = document.getElementById('surprise-timer-bar');
             
@@ -225,7 +226,8 @@
             const interval = setInterval(() => {
                 timeLeft--;
                 timerEl.innerText = timeLeft;
-                barEl.style.width = `${(timeLeft / 60) * 100}%`;
+                // Ajustado para dividir entre 20
+                barEl.style.width = `${(timeLeft / 20) * 100}%`;
                 
                 if (timeLeft <= 0) {
                     clearInterval(interval);
