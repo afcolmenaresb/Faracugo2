@@ -28,6 +28,21 @@
             width: 100%;
             transition: width 1s linear;
         }
+        /* Animación de fondo */
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.4; }
+            90% { opacity: 0.4; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+        .floating-emoji {
+            position: fixed;
+            bottom: -50px;
+            z-index: -1; /* Esto hace que se queden detrás del recuadro blanco */
+            animation: floatUp linear infinite;
+            pointer-events: none; /* Evita que molesten al hacer clic en los botones */
+            user-select: none;
+        }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
@@ -379,6 +394,28 @@
                 }
             });
         }
+        // --- ANIMACIÓN DE FONDO ---
+        function createFloatingBackground() {
+            // Aquí puedes cambiar o quitar los emojis que quieras
+            const emojis = ['🦆', '🐘', '✨', '✈️']; 
+            
+            // Crea 20 elementos flotantes
+            for (let i = 0; i < 20; i++) {
+                let el = document.createElement('div');
+                el.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                el.className = 'floating-emoji';
+                
+                // Posición, tamaño y velocidad aleatoria para que se vea natural
+                el.style.left = Math.random() * 100 + 'vw';
+                el.style.animationDuration = (Math.random() * 15 + 10) + 's'; 
+                el.style.animationDelay = (Math.random() * 10) + 's';
+                el.style.fontSize = (Math.random() * 1.5 + 1) + 'rem';
+                
+                document.body.appendChild(el);
+            }
+        }
+        // Iniciamos la animación
+        createFloatingBackground();
     </script>
 </body>
 </html>
