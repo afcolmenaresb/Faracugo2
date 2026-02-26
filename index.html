@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Las mejores cosas de la vida toman tiempo ❤️</title>
     
-    <script src="https://cdn.tailwindcss.com"></script> 
+    <script src="https://cdn.tailwindcss.com"></script>
     
     <style>
         .hidden { display: none !important; }
-        body { font-family: sans-serif; background-color: #fdf2f8; }
+        body { font-family: sans-serif; background-color: #fdf2f8; overflow-x: hidden; }
         .fade-in { animation: fadeIn 0.5s ease-in; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .memories-scroll { max-height: 300px; overflow-y: auto; }
@@ -31,23 +31,23 @@
         /* Animación de fondo */
         @keyframes floatUp {
             0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.4; }
-            90% { opacity: 0.4; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
             100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
         }
         .floating-emoji {
             position: fixed;
             bottom: -50px;
-            z-index: -1; /* Esto hace que se queden detrás del recuadro blanco */
+            z-index: 0; /* CORRECCIÓN: Los trajimos hacia adelante */
             animation: floatUp linear infinite;
-            pointer-events: none; /* Evita que molesten al hacer clic en los botones */
+            pointer-events: none; 
             user-select: none;
         }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
 
-    <div id="app-container" class="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center fade-in">
+    <div id="app-container" class="relative z-10 max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center fade-in">
         
         <div id="login-screen">
             <h1 class="text-2xl font-bold text-pink-600 mb-4">¡Hola, amor de mi vida! 🦆❤️🐘</h1>
@@ -59,7 +59,7 @@
 
         <div id="one-time-surprise-screen" class="hidden">
             <h2 class="text-xl font-bold text-pink-600 mb-4 animate-bounce">✨ ¡SECRETO REVELADO! ✨</h2>
-            <p class="text-gray-600 mb-6 text-sm">Anota esto rápido. Solo lo verás esta vez... es parte de nuestro.....</p>
+            <p class="text-gray-600 mb-6 text-sm">Anota esto rápido. Solo lo verás esta vez... es parte de nuestro destino.</p>
             
             <div class="bg-pink-50 rounded-xl p-6 shadow-inner border-2 border-dashed border-pink-400 mb-8 flex flex-col items-center justify-center text-center">
                 <span class="text-xl font-bold text-pink-600 mb-2 leading-snug">
@@ -132,6 +132,26 @@
         </div>
 
     </div>
+
+    <script>
+        function createFloatingBackground() {
+            const emojis = ['🦆', '🐘', '✨', '✈️']; 
+            
+            for (let i = 0; i < 20; i++) {
+                let el = document.createElement('div');
+                el.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                el.className = 'floating-emoji';
+                
+                el.style.left = Math.random() * 100 + 'vw';
+                el.style.animationDuration = (Math.random() * 15 + 10) + 's'; 
+                el.style.animationDelay = (Math.random() * 10) + 's';
+                el.style.fontSize = (Math.random() * 1.5 + 1) + 'rem';
+                
+                document.body.appendChild(el);
+            }
+        }
+        createFloatingBackground();
+    </script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -232,7 +252,6 @@
             }
         }
 
-        // --- CORRECCIÓN AQUÍ: Tiempo y división ajustados a 20s ---
         function mostrarSorpresaUnica(callback) {
             showScreen('one-time-surprise-screen');
             let timeLeft = 20; 
@@ -244,7 +263,6 @@
             const interval = setInterval(() => {
                 timeLeft--;
                 timerEl.innerText = timeLeft;
-                // Ajustado para dividir entre 20
                 barEl.style.width = `${(timeLeft / 20) * 100}%`;
                 
                 if (timeLeft <= 0) {
@@ -394,28 +412,6 @@
                 }
             });
         }
-        // --- ANIMACIÓN DE FONDO ---
-        function createFloatingBackground() {
-            // Aquí puedes cambiar o quitar los emojis que quieras
-            const emojis = ['🦆', '🐘', '✨', '✈️']; 
-            
-            // Crea 20 elementos flotantes
-            for (let i = 0; i < 20; i++) {
-                let el = document.createElement('div');
-                el.innerText = emojis[Math.floor(Math.random() * emojis.length)];
-                el.className = 'floating-emoji';
-                
-                // Posición, tamaño y velocidad aleatoria para que se vea natural
-                el.style.left = Math.random() * 100 + 'vw';
-                el.style.animationDuration = (Math.random() * 15 + 10) + 's'; 
-                el.style.animationDelay = (Math.random() * 10) + 's';
-                el.style.fontSize = (Math.random() * 1.5 + 1) + 'rem';
-                
-                document.body.appendChild(el);
-            }
-        }
-        // Iniciamos la animación
-        createFloatingBackground();
     </script>
 </body>
 </html>
