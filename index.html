@@ -221,34 +221,44 @@
             await checkStatus();
         };
 
-        async function checkStatus() {
+       async function checkStatus() {
             try {
                 const docRef = doc(db, "sorpresa", currentUserId);
                 const docSnap = await getDoc(docRef);
+                let data;
 
                 if (!docSnap.exists()) {
-                    await setDoc(docRef, { 
+                    // Si es la primera vez que entra en su vida, creamos su perfil
+                    // y marcamos sorpresaVista como true porque se la vamos a mostrar ya.
+                    data = { 
                         currentQuestion: 0, 
                         blockedUntil: null, 
                         nextLevelUnlock: null,
-                        sorpresaVista: false 
+                        sorpresaVista: true 
+                    };
+                    await setDoc(docRef, data);
+                    
+                    // Le mostramos la sorpresa y luego sigue el juego
+                    mostrarSorpresaUnica(() => {
+                        procesarFlujoNormal(data);
                     });
-                    showScreen('quiz-screen');
-                    loadQuestion(0);
+                    return; 
                 } else {
-                    const data = docSnap.data();
-
-                    if (data.sorpresaVista !== true) {
-                        await updateDoc(docRef, { sorpresaVista: true });
-                        
-                        mostrarSorpresaUnica(() => {
-                            procesarFlujoNormal(data);
-                        });
-                        return; 
-                    }
-
-                    procesarFlujoNormal(data);
+                    data = docSnap.data();
                 }
+
+                // Si ya existía pero por algún motivo no había visto la sorpresa
+                if (data.sorpresaVista !== true) {
+                    await updateDoc(docRef, { sorpresaVista: true });
+                    
+                    mostrarSorpresaUnica(() => {
+                        procesarFlujoNormal(data);
+                    });
+                    return; 
+                }
+
+                // Si ya la vio antes, sigue el juego normal sin mostrarla
+                procesarFlujoNormal(data);
                 
             } catch (error) {
                 console.error(error);
