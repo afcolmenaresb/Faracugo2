@@ -62,7 +62,7 @@
 
         <div id="one-time-surprise-screen" class="hidden">
             <h2 class="text-xl font-bold text-pink-600 mb-4 animate-bounce">✨ ¡SECRETO REVELADO! ✨</h2>
-            <p class="text-gray-600 mb-6 text-sm">Anota esto rápido. Solo lo verás esta vez... es parte de nuestro....</p>
+            <p class="text-gray-600 mb-6 text-sm">Anota esto rápido. Solo lo verás esta vez... es parte de nuestro...</p>
             
             <div class="bg-pink-50 rounded-xl p-6 shadow-inner border-2 border-dashed border-pink-400 mb-8 flex flex-col items-center justify-center text-center">
                 <span class="text-xl font-bold text-pink-600 mb-2 leading-snug">
@@ -74,7 +74,7 @@
                 <span class="text-5xl font-mono font-black text-pink-600 tracking-[0.2em] ml-2">
                     A🫂REA4
                 </span>
-                <span class="text-lg font-medium text-pink-500">
+                <span class="text-lg font-medium text-pink-500 mt-2">
                     ¿Descubrirás de qué trata ese código de 6 letras, señorita Curis?
                 </span>
             </div>
@@ -99,12 +99,10 @@
             
             <div class="bg-pink-50 p-2 rounded-xl border border-pink-100 mb-6 shadow-sm overflow-hidden">
                 <p class="text-pink-600 italic animate-pulse mb-2 text-sm">Mientras esperas el siguiente misterio, escucha esto...</p>
-                <iframe 
-                    src="https://drive.google.com/file/d/1NORgMYTvg7WMfd1dMa-1k50gdU2jB8Rp/preview" 
-                    width="100%" 
-                    height="100" 
-                    style="border:none;">
-                </iframe>
+                <audio id="poema-audio" controls class="w-full mt-2 outline-none">
+                    <source src="https://github.com/afcolmenaresb/archivos-sorpresa/raw/refs/heads/main/Versos%20para%20ti.mp3" type="audio/mpeg">
+                    Tu navegador no soporta el audio.
+                </audio>
             </div>
             
             <div class="border-t border-gray-100 pt-4">
@@ -227,15 +225,13 @@
             await checkStatus();
         };
 
-       async function checkStatus() {
+        async function checkStatus() {
             try {
                 const docRef = doc(db, "sorpresa", currentUserId);
                 const docSnap = await getDoc(docRef);
                 let data;
 
                 if (!docSnap.exists()) {
-                    // Si es la primera vez que entra en su vida, creamos su perfil
-                    // y marcamos sorpresaVista como true porque se la vamos a mostrar ya.
                     data = { 
                         currentQuestion: 0, 
                         blockedUntil: null, 
@@ -244,7 +240,6 @@
                     };
                     await setDoc(docRef, data);
                     
-                    // Le mostramos la sorpresa y luego sigue el juego
                     mostrarSorpresaUnica(() => {
                         procesarFlujoNormal(data);
                     });
@@ -253,7 +248,6 @@
                     data = docSnap.data();
                 }
 
-                // Si ya existía pero por algún motivo no había visto la sorpresa
                 if (data.sorpresaVista !== true) {
                     await updateDoc(docRef, { sorpresaVista: true });
                     
@@ -263,7 +257,6 @@
                     return; 
                 }
 
-                // Si ya la vio antes, sigue el juego normal sin mostrarla
                 procesarFlujoNormal(data);
                 
             } catch (error) {
@@ -431,6 +424,17 @@
                     el.style.display = 'none';
                 }
             });
+
+            // Control del reproductor de audio
+            const poemaAudio = document.getElementById('poema-audio');
+            if (poemaAudio) {
+                if (id === 'level-wait-screen') {
+                    // Intenta reproducir automáticamente (algunos navegadores requieren interacción previa)
+                    poemaAudio.play().catch(e => console.log('Autoplay requerido de interacción previa:', e));
+                } else {
+                    poemaAudio.pause();
+                }
+            }
         }
     </script>
 </body>
