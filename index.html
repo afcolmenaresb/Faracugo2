@@ -7,6 +7,22 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <script>
+        // Bloquear clic derecho
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        
+        // Bloquear atajos de teclado para ver código fuente o consola
+        document.addEventListener('keydown', e => {
+            if (e.key === 'F12' || 
+               (e.ctrlKey && e.shiftKey && e.key === 'I') || 
+               (e.ctrlKey && e.shiftKey && e.key === 'J') || 
+               (e.ctrlKey && e.shiftKey && e.key === 'C') || 
+               (e.ctrlKey && e.key === 'U')) {
+                e.preventDefault();
+            }
+        });
+    </script>
+    
     <style>
         .hidden { display: none !important; }
         body { font-family: sans-serif; background-color: #fdf2f8; overflow-x: hidden; }
@@ -98,13 +114,20 @@
             <h2 class="text-xl font-bold text-pink-500 mb-2">¡Correcto!</h2>
             <p class="text-gray-600 mb-4">Has acertado, pero las mejores cosas se hacen esperar.</p>
             
-            <div class="bg-pink-50 p-2 rounded-xl border border-pink-100 mb-6 shadow-sm overflow-hidden">
-                <p class="text-pink-600 italic animate-pulse mb-2 text-sm">Mientras esperas el siguiente misterio, escucha esto...</p>
+            <div class="bg-pink-50 p-4 rounded-xl border border-pink-100 mb-6 shadow-sm overflow-hidden">
+                <p class="text-pink-600 italic animate-pulse mb-4 text-sm">Mientras esperas el siguiente misterio, escucha esto...</p>
                 
-                <audio id="reproductor-bg" controls class="w-full mt-2 outline-none">
+                <audio id="reproductor-bg" controls class="w-full outline-none mb-4">
                     Tu navegador no soporta el audio.
                 </audio>
-                <p class="text-xs text-gray-400 mt-2">La música te acompañará en todo el viaje.</p>
+                
+                <div class="flex justify-center items-center space-x-6 mb-2">
+                    <button onclick="reproducirAnterior()" class="bg-pink-200 hover:bg-pink-300 text-pink-700 rounded-full w-12 h-12 flex items-center justify-center shadow transition text-xl">⏮️</button>
+                    <span id="pista-indicador" class="text-xs text-pink-500 font-bold uppercase tracking-widest">Pista 1</span>
+                    <button onclick="reproducirSiguiente()" class="bg-pink-200 hover:bg-pink-300 text-pink-700 rounded-full w-12 h-12 flex items-center justify-center shadow transition text-xl">⏭️</button>
+                </div>
+                
+                <p class="text-xs text-gray-400 mt-3">La música te acompañará en todo el viaje.</p>
             </div>
             
             <div class="border-t border-gray-100 pt-4">
@@ -162,37 +185,46 @@
         }
         createFloatingBackground();
 
-        // --- INICIO DE LISTA DE REPRODUCCIÓN ---
-        // Aquí puedes agregar todos los enlaces "Raw" de GitHub que quieras, separados por comas.
+        // --- INICIO DE LISTA DE REPRODUCCIÓN (NUEVA LÓGICA) ---
         const playlist = [
-            "https://github.com/afcolmenaresb/archivos-sorpresa/raw/refs/heads/main/Versos%20para%20ti.mp3", "https://github.com/afcolmenaresb/archivos-sorpresa/raw/refs/heads/main/F%C3%A1tima_Coraz%C3%B3n_de_Sabana.mp3"
-            // "https://github.com/.../cancion2.mp3",
-            // "https://github.com/.../cancion3.mp3"
+            "https://github.com/afcolmenaresb/archivos-sorpresa/raw/refs/heads/main/Versos%20para%20ti.mp3", 
+            "https://github.com/afcolmenaresb/archivos-sorpresa/raw/refs/heads/main/F%C3%A1tima_Coraz%C3%B3n_de_Sabana.mp3"
         ];
         
         let trackActual = 0;
         const reproductor = document.getElementById('reproductor-bg');
+        const indicador = document.getElementById('pista-indicador');
         let musicaIniciada = false;
 
-        function reproducirSiguiente() {
+        window.reproducirPistaActual = function() {
             if (!reproductor) return;
             
-            // Carga la canción actual de la lista
             reproductor.src = playlist[trackActual];
             reproductor.play().catch(e => console.log("Esperando interacción para reproducir", e));
             
-            // Prepara el índice para la siguiente canción
+            if (indicador) {
+                indicador.innerText = `Pista ${trackActual + 1} de ${playlist.length}`;
+            }
+        };
+
+        window.reproducirSiguiente = function() {
             trackActual++;
-            
-            // Si llega al final de la lista, vuelve a empezar (Loop infinito)
             if (trackActual >= playlist.length) {
                 trackActual = 0; 
             }
-        }
+            reproducirPistaActual();
+        };
 
-        // Cuando la canción actual termine, se dispara este evento y pone la siguiente
+        window.reproducirAnterior = function() {
+            trackActual--;
+            if (trackActual < 0) {
+                trackActual = playlist.length - 1; 
+            }
+            reproducirPistaActual();
+        };
+
         if(reproductor) {
-            reproductor.addEventListener('ended', reproducirSiguiente);
+            reproductor.addEventListener('ended', window.reproducirSiguiente);
         }
         // --- FIN DE LISTA DE REPRODUCCIÓN ---
     </script>
@@ -256,9 +288,9 @@
                 return;
             }
 
-            // INICIAMOS LA MÚSICA DE FONDO AL DAR CLIC EN "ENTRAR"
+            // INICIAMOS LA MÚSICA AL DAR CLIC EN ENTRAR (Cambio clave aquí)
             if (!musicaIniciada) {
-                reproducirSiguiente();
+                window.reproducirPistaActual();
                 musicaIniciada = true;
             }
 
