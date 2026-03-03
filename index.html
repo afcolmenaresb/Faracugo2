@@ -100,10 +100,11 @@
             
             <div class="bg-pink-50 p-2 rounded-xl border border-pink-100 mb-6 shadow-sm overflow-hidden">
                 <p class="text-pink-600 italic animate-pulse mb-2 text-sm">Mientras esperas el siguiente misterio, escucha esto...</p>
-                <audio id="poema-audio" controls class="w-full mt-2 outline-none">
-                    <source src="https://github.com/afcolmenaresb/archivos-sorpresa/raw/refs/heads/main/Versos%20para%20ti.mp3" type="audio/mpeg">
+                
+                <audio id="reproductor-bg" controls class="w-full mt-2 outline-none">
                     Tu navegador no soporta el audio.
                 </audio>
+                <p class="text-xs text-gray-400 mt-2">La música te acompañará en todo el viaje.</p>
             </div>
             
             <div class="border-t border-gray-100 pt-4">
@@ -143,16 +144,11 @@
 
     <script>
         function createFloatingBackground() {
-            // Logo transparente de Copa Airlines
             const copaLogo = '<img src="https://github.com/afcolmenaresb/archivos-sorpresa/blob/main/copa-airlines-logo-0.jpg?raw=true" style="width: 4em; opacity: 0.7;">';
-            
-            // Mezclamos los emojis de texto con la imagen HTML
             const items = ['🦆', '🐘', '✨', '✈️', copaLogo]; 
             
-            for (let i = 0; i < 25; i++) { // Subimos a 25 para que el logo salga más veces
+            for (let i = 0; i < 25; i++) { 
                 let el = document.createElement('div');
-                
-                // Usamos innerHTML para que el navegador procese la imagen
                 el.innerHTML = items[Math.floor(Math.random() * items.length)];
                 el.className = 'floating-emoji';
                 
@@ -165,6 +161,40 @@
             }
         }
         createFloatingBackground();
+
+        // --- INICIO DE LISTA DE REPRODUCCIÓN ---
+        // Aquí puedes agregar todos los enlaces "Raw" de GitHub que quieras, separados por comas.
+        const playlist = [
+            "https://github.com/afcolmenaresb/archivos-sorpresa/raw/refs/heads/main/Versos%20para%20ti.mp3", "https://github.com/afcolmenaresb/archivos-sorpresa/raw/refs/heads/main/F%C3%A1tima_Coraz%C3%B3n_de_Sabana.mp3"
+            // "https://github.com/.../cancion2.mp3",
+            // "https://github.com/.../cancion3.mp3"
+        ];
+        
+        let trackActual = 0;
+        const reproductor = document.getElementById('reproductor-bg');
+        let musicaIniciada = false;
+
+        function reproducirSiguiente() {
+            if (!reproductor) return;
+            
+            // Carga la canción actual de la lista
+            reproductor.src = playlist[trackActual];
+            reproductor.play().catch(e => console.log("Esperando interacción para reproducir", e));
+            
+            // Prepara el índice para la siguiente canción
+            trackActual++;
+            
+            // Si llega al final de la lista, vuelve a empezar (Loop infinito)
+            if (trackActual >= playlist.length) {
+                trackActual = 0; 
+            }
+        }
+
+        // Cuando la canción actual termine, se dispara este evento y pone la siguiente
+        if(reproductor) {
+            reproductor.addEventListener('ended', reproducirSiguiente);
+        }
+        // --- FIN DE LISTA DE REPRODUCCIÓN ---
     </script>
 
     <script type="module">
@@ -224,6 +254,12 @@
             if (code !== "sagrada familia") { 
                 document.getElementById('login-error').classList.remove('hidden');
                 return;
+            }
+
+            // INICIAMOS LA MÚSICA DE FONDO AL DAR CLIC EN "ENTRAR"
+            if (!musicaIniciada) {
+                reproducirSiguiente();
+                musicaIniciada = true;
             }
 
             currentUserId = "novia_" + code.replace(/\s+/g, '');
@@ -430,15 +466,6 @@
                     el.style.display = 'none';
                 }
             });
-
-            const poemaAudio = document.getElementById('poema-audio');
-            if (poemaAudio) {
-                if (id === 'level-wait-screen') {
-                    poemaAudio.play().catch(e => console.log('Autoplay requerido de interacción previa:', e));
-                } else {
-                    poemaAudio.pause();
-                }
-            }
         }
     </script>
 </body>
