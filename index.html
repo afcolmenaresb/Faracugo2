@@ -29,22 +29,23 @@
             transition: width 1s linear;
         }
         
-        /* Animación de fondo (CORREGIDA) */
+        /* Animación de fondo */
         @keyframes floatUp {
             0% { transform: translateY(0) rotate(0deg); opacity: 0; }
             10% { opacity: 0.6; }
             90% { opacity: 0.6; }
-            /* Ahora suben hasta arriba del todo (-120vh) */
             100% { transform: translateY(-120vh) rotate(360deg); opacity: 0; }
         }
         .floating-emoji {
             position: fixed;
-            /* Empiezan un poco por debajo de la pantalla para que entren suave */
             bottom: -50px; 
             z-index: 0; 
             animation: floatUp linear infinite;
             pointer-events: none; 
             user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
     </style>
 </head>
@@ -62,7 +63,7 @@
 
         <div id="one-time-surprise-screen" class="hidden">
             <h2 class="text-xl font-bold text-pink-600 mb-4 animate-bounce">✨ ¡SECRETO REVELADO! ✨</h2>
-            <p class="text-gray-600 mb-6 text-sm">Anota esto rápido. Solo lo verás esta vez... es parte de nuestro...</p>
+            <p class="text-gray-600 mb-6 text-sm">Anota esto rápido. Solo lo verás esta vez... es parte de nuestro destino.</p>
             
             <div class="bg-pink-50 rounded-xl p-6 shadow-inner border-2 border-dashed border-pink-400 mb-8 flex flex-col items-center justify-center text-center">
                 <span class="text-xl font-bold text-pink-600 mb-2 leading-snug">
@@ -71,7 +72,7 @@
                 <span class="text-lg font-medium text-pink-500">
                     El del otro día no era el correcto 😝, el correcto es:
                 </span>
-                <span class="text-5xl font-mono font-black text-pink-600 tracking-[0.2em] ml-2">
+                <span class="text-5xl font-mono font-black text-pink-600 tracking-[0.2em] ml-2 mt-2 mb-2">
                     A🫂REA4
                 </span>
                 <span class="text-lg font-medium text-pink-500 mt-2">
@@ -142,15 +143,20 @@
 
     <script>
         function createFloatingBackground() {
-            const emojis = ['🦆', '🐘', '✨', '✈️']; 
+            // Logo transparente de Copa Airlines
+            const copaLogo = '<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Copa_Airlines_logo.svg/512px-Copa_Airlines_logo.svg.png" style="width: 4em; opacity: 0.7;" alt="Copa">';
             
-            for (let i = 0; i < 20; i++) {
+            // Mezclamos los emojis de texto con la imagen HTML
+            const items = ['🦆', '🐘', '✨', '✈️', copaLogo]; 
+            
+            for (let i = 0; i < 25; i++) { // Subimos a 25 para que el logo salga más veces
                 let el = document.createElement('div');
-                el.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                
+                // Usamos innerHTML para que el navegador procese la imagen
+                el.innerHTML = items[Math.floor(Math.random() * items.length)];
                 el.className = 'floating-emoji';
                 
                 el.style.left = Math.random() * 100 + 'vw';
-                // AUMENTAMOS EL TIEMPO: Ahora tardan entre 15 y 35 segundos en subir
                 el.style.animationDuration = (Math.random() * 20 + 15) + 's'; 
                 el.style.animationDelay = (Math.random() * 10) + 's';
                 el.style.fontSize = (Math.random() * 1.5 + 1) + 'rem';
@@ -425,11 +431,9 @@
                 }
             });
 
-            // Control del reproductor de audio
             const poemaAudio = document.getElementById('poema-audio');
             if (poemaAudio) {
                 if (id === 'level-wait-screen') {
-                    // Intenta reproducir automáticamente (algunos navegadores requieren interacción previa)
                     poemaAudio.play().catch(e => console.log('Autoplay requerido de interacción previa:', e));
                 } else {
                     poemaAudio.pause();
