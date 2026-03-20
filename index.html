@@ -8,16 +8,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <script>
-        // Bloquear clic derecho
+        // Bloquear clic derecho y atajos
         document.addEventListener('contextmenu', e => e.preventDefault());
-        
-        // Bloquear atajos de teclado para ver código fuente o consola
         document.addEventListener('keydown', e => {
-            if (e.key === 'F12' || 
-               (e.ctrlKey && e.shiftKey && e.key === 'I') || 
-               (e.ctrlKey && e.shiftKey && e.key === 'J') || 
-               (e.ctrlKey && e.shiftKey && e.key === 'C') || 
-               (e.ctrlKey && e.key === 'U')) {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) || (e.ctrlKey && e.key === 'U')) {
                 e.preventDefault();
             }
         });
@@ -29,40 +23,10 @@
         .fade-in { animation: fadeIn 0.5s ease-in; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .memories-scroll { max-height: 300px; overflow-y: auto; }
-        
-        /* Barra de progreso para la sorpresa */
-        .progress-bar {
-            width: 100%;
-            height: 4px;
-            background-color: #e5e7eb;
-            border-radius: 2px;
-            overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%;
-            background-color: #db2777;
-            width: 100%;
-            transition: width 1s linear;
-        }
-        
-        /* Animación de fondo */
-        @keyframes floatUp {
-            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.6; }
-            90% { opacity: 0.6; }
-            100% { transform: translateY(-120vh) rotate(360deg); opacity: 0; }
-        }
-        .floating-emoji {
-            position: fixed;
-            bottom: -50px; 
-            z-index: 0; 
-            animation: floatUp linear infinite;
-            pointer-events: none; 
-            user-select: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        .progress-bar { width: 100%; height: 4px; background-color: #e5e7eb; border-radius: 2px; overflow: hidden; }
+        .progress-fill { height: 100%; background-color: #db2777; width: 100%; transition: width 1s linear; }
+        @keyframes floatUp { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 10% { opacity: 0.6; } 90% { opacity: 0.6; } 100% { transform: translateY(-120vh) rotate(360deg); opacity: 0; } }
+        .floating-emoji { position: fixed; bottom: -50px; z-index: 0; animation: floatUp linear infinite; pointer-events: none; user-select: none; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
@@ -80,26 +44,28 @@
         <div id="one-time-surprise-screen" class="hidden">
             <h2 class="text-xl font-bold text-pink-600 mb-4 animate-bounce">✨ ¡SECRETO REVELADO! ✨</h2>
             <p class="text-gray-600 mb-6 text-sm">Anota esto rápido. Solo lo verás esta vez... es parte de nuestro destino.</p>
-            
             <div class="bg-pink-50 rounded-xl p-6 shadow-inner border-2 border-dashed border-pink-400 mb-8 flex flex-col items-center justify-center text-center">
-                <span class="text-xl font-bold text-pink-600 mb-2 leading-snug">
-                    ¿Anotaste el código del otro día, amor mío?
-                </span>
-                <span class="text-lg font-medium text-pink-500">
-                    El del otro día no era el correcto 😝, el correcto es:
-                </span>
-                <span class="text-5xl font-mono font-black text-pink-600 tracking-[0.2em] ml-2 mt-2 mb-2">
-                    A🫂REA4
-                </span>
-                <span class="text-lg font-medium text-pink-500 mt-2">
-                    ¿Descubrirás de qué trata ese código de 6 letras, señorita Curis?
-                </span>
+                <span class="text-xl font-bold text-pink-600 mb-2 leading-snug">¿Anotaste el código del otro día, amor mío?</span>
+                <span class="text-lg font-medium text-pink-500">El del otro día no era el correcto 😝, el correcto es:</span>
+                <span class="text-5xl font-mono font-black text-pink-600 tracking-[0.2em] ml-2 mt-2 mb-2">A🫂REA4</span>
+                <span class="text-lg font-medium text-pink-500 mt-2">¿Descubrirás de qué trata ese código de 6 letras, señorita Curis?</span>
             </div>
-
-            <div class="progress-bar mb-2">
-                <div id="surprise-timer-bar" class="progress-fill"></div>
-            </div>
+            <div class="progress-bar mb-2"><div id="surprise-timer-bar" class="progress-fill"></div></div>
             <p class="text-xs text-gray-400">Se autodestruye en <span id="surprise-countdown">20</span>s</p>
+        </div>
+
+        <div id="image-surprise-screen" class="hidden">
+            <h2 class="text-xl font-bold text-pink-600 mb-4 animate-pulse">✨ ¡UN RECUERDO ESPECIAL! ✨</h2>
+            <div class="bg-pink-50 rounded-xl p-4 shadow-inner border-2 border-dashed border-pink-400 mb-6 flex flex-col items-center justify-center text-center">
+                
+                <img src="PON_AQUI_TU_ENLACE_DE_GITHUB" alt="Nuestra Sorpresa" class="rounded-lg shadow-md mb-4 w-full h-48 object-cover">
+                
+                <span class="text-sm font-medium text-pink-500">
+                    Solo quería recordarte algo hermoso antes de continuar...
+                </span>
+            </div>
+            <div class="progress-bar mb-2"><div id="img-surprise-timer-bar" class="progress-fill"></div></div>
+            <p class="text-xs text-gray-400">Continúa en <span id="img-surprise-countdown">20</span>s</p>
         </div>
 
         <div id="block-screen" class="hidden">
@@ -116,17 +82,12 @@
             
             <div class="bg-pink-50 p-4 rounded-xl border border-pink-100 mb-6 shadow-sm overflow-hidden">
                 <p class="text-pink-600 italic animate-pulse mb-4 text-sm">Mientras esperas el siguiente misterio, escucha esto...</p>
-                
-                <audio id="reproductor-bg" controls class="w-full outline-none mb-4">
-                    Tu navegador no soporta el audio.
-                </audio>
-                
+                <audio id="reproductor-bg" controls class="w-full outline-none mb-4">Tu navegador no soporta el audio.</audio>
                 <div class="flex justify-center items-center space-x-6 mb-2">
                     <button onclick="reproducirAnterior()" class="bg-pink-200 hover:bg-pink-300 text-pink-700 rounded-full w-12 h-12 flex items-center justify-center shadow transition text-xl">⏮️</button>
                     <span id="pista-indicador" class="text-xs text-pink-500 font-bold uppercase tracking-widest">Pista 1</span>
                     <button onclick="reproducirSiguiente()" class="bg-pink-200 hover:bg-pink-300 text-pink-700 rounded-full w-12 h-12 flex items-center justify-center shadow transition text-xl">⏭️</button>
                 </div>
-                
                 <p class="text-xs text-gray-400 mt-3">La música te acompañará en todo el viaje.</p>
             </div>
             
@@ -137,9 +98,7 @@
         </div>
 
         <div id="quiz-screen" class="hidden">
-            <div class="mb-4">
-                <span id="progress-text" class="text-xs font-bold text-pink-400 tracking-widest uppercase">MISTERIO 1</span>
-            </div>
+            <div class="mb-4"><span id="progress-text" class="text-xs font-bold text-pink-400 tracking-widest uppercase">MISTERIO 1</span></div>
             <h2 id="question-text" class="text-xl font-bold text-gray-800 mb-6">¿Pregunta?</h2>
             <div id="options-container" class="space-y-3"></div>
         </div>
@@ -148,18 +107,15 @@
             <div class="text-6xl mb-4">✈️🎂</div>
             <h1 class="text-3xl font-bold text-pink-600 mb-2">¡SORPRESA!</h1>
             <p class="text-gray-700 mb-4">Prepara las maletas porque nos vamos...</p>
-            
             <div class="bg-pink-50 rounded-lg p-4 text-left text-sm space-y-2 mb-4">
                 <p>🗓️ <strong>11/06:</strong> Vuelo a <span class="text-pink-600 font-bold">San Andrés 🏝️</span></p>
                 <p>🗓️ <strong>14/06:</strong> Rumbo a <span class="text-pink-600 font-bold">Bogotá, Desierto de la Tatacoa y Eje Cafetero ☕</span></p>
                 <p>🗓️ <strong>20/06:</strong> Regreso a casa 🏠</p>
             </div>
-
             <div class="border-t border-gray-100 pt-4 mb-4">
                 <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-3">📜 Nuestra Historia</h3>
                 <div id="success-memories" class="memories-scroll text-left space-y-3 text-sm text-gray-600"></div>
             </div>
-
             <p class="italic text-gray-500 text-xs">¡Te amo!</p>
         </div>
 
@@ -169,23 +125,19 @@
         function createFloatingBackground() {
             const copaLogo = '<img src="https://raw.githubusercontent.com/afcolmenaresb/archivos-sorpresa/refs/heads/main/copa-airlines-logo-0.jpg" style="width: 4em; opacity: 0.7;">';
             const items = ['🦆', '🐘', '✨', '✈️', copaLogo]; 
-            
             for (let i = 0; i < 25; i++) { 
                 let el = document.createElement('div');
                 el.innerHTML = items[Math.floor(Math.random() * items.length)];
                 el.className = 'floating-emoji';
-                
                 el.style.left = Math.random() * 100 + 'vw';
                 el.style.animationDuration = (Math.random() * 20 + 15) + 's'; 
                 el.style.animationDelay = (Math.random() * 10) + 's';
                 el.style.fontSize = (Math.random() * 1.5 + 1) + 'rem';
-                
                 document.body.appendChild(el);
             }
         }
         createFloatingBackground();
 
-        // --- INICIO DE LISTA DE REPRODUCCIÓN (NUEVA LÓGICA) ---
         const playlist = [
             "https://github.com/afcolmenaresb/archivos-sorpresa/raw/refs/heads/main/Versos%20para%20ti.mp3", 
             "https://github.com/afcolmenaresb/archivos-sorpresa/raw/refs/heads/main/F%C3%A1tima_Coraz%C3%B3n_de_Sabana.mp3",
@@ -199,40 +151,29 @@
 
         window.reproducirPistaActual = function() {
             if (!reproductor) return;
-            
             reproductor.src = playlist[trackActual];
             reproductor.play().catch(e => console.log("Esperando interacción para reproducir", e));
-            
-            if (indicador) {
-                indicador.innerText = `Pista ${trackActual + 1} de ${playlist.length}`;
-            }
+            if (indicador) { indicador.innerText = `Pista ${trackActual + 1} de ${playlist.length}`; }
         };
 
         window.reproducirSiguiente = function() {
             trackActual++;
-            if (trackActual >= playlist.length) {
-                trackActual = 0; 
-            }
+            if (trackActual >= playlist.length) { trackActual = 0; }
             reproducirPistaActual();
         };
 
         window.reproducirAnterior = function() {
             trackActual--;
-            if (trackActual < 0) {
-                trackActual = playlist.length - 1; 
-            }
+            if (trackActual < 0) { trackActual = playlist.length - 1; }
             reproducirPistaActual();
         };
 
-        if(reproductor) {
-            reproductor.addEventListener('ended', window.reproducirSiguiente);
-        }
-        // --- FIN DE LISTA DE REPRODUCCIÓN ---
+        if(reproductor) { reproductor.addEventListener('ended', window.reproducirSiguiente); }
     </script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA9PxB95Z9Vli6k93mpI_1Q72cau9IPDv0",
@@ -247,47 +188,24 @@
         const db = getFirestore(app);
 
         const PENALTY_HOURS = 48; 
-        const SUCCESS_WAIT_HOURS = 188; 
+        
+        // FUNCIÓN QUE CALCULA EL TIEMPO RANDOM ENTRE 4 Y 7 DÍAS
+        function obtenerTiempoEsperaAleatorio() {
+            const minHoras = 4 * 24; // 4 días
+            const maxHoras = 7 * 24; // 7 días
+            const randomHoras = Math.floor(Math.random() * (maxHoras - minHoras + 1)) + minHoras;
+            return new Date(Date.now() + randomHoras * 60 * 60 * 1000);
+        }
 
         const questions = [
-            {
-                q: "Nuestra primera cita estuvo llena de magia, esa primera vez en que pude verte y escuchar tu voz... ¿Cuál era el color de mi camisa?",
-                options: ["Verde", "Blanca", "Azul", "No tenía"], 
-                correct: 3 
-            },
-            {
-                q: "Conocerte fue todo un misterio, uno muy hermoso e intrigante en el que tu nombre se iba descubriendo poco a poco ¿Cuál fue el segundo nombre que te puse cuando adiviné?",
-                options: ["Rafael", "Camila", "Carlos", "Camilo"], 
-                correct: 2
-            },
-            {
-                q: "Para mí, tu voz es una hermosa melodía que me relaja, que me lleva a un paraíso ¿Recuerdas cuándo fue la primera vez que te dije que tu voz es relajante?",
-                options: ["24 de noviembre de 2025", "25 de noviembre de 2025", "26 de noviembre de 2025", "27 de noviembre de 2025"], 
-                correct: 1 
-            },
-            {
-                q: "¿Y la primera vez que te dije que eres muy perspicaz?",
-                options: ["24 de noviembre de 2025", "25 de noviembre de 2025", "26 de noviembre de 2025", "27 de noviembre de 2025"], 
-                correct: 0 
-            },
-            {
-                q: "Sin duda, amor mío, conoceremos muchos lugares de este mundo, juntos. Quiero poder besarte en todos los países ¿Cuál es ese primer lugar que te pregunté si quieres acompañarme?",
-                options: ["Vietnam", "Colombia", "Cuba", "Japón"], 
-                correct: 3 
-            },
-            {
-                q: "Una de las primeras cosas que creamos juntos fue nuestra lista de reproducción compartida, que se actualiza cada 24 h. ¿Cuál fue el primer nombre que se le puso?",
-                options: ["Faticugo", "Faticol", "Econometría", "Cheesecake de frutos rojos"], 
-                correct: 1
-            },
-            {
-                q: "¿Podrías describir el momento más preciado para ti de los que hasta ahora hemos vivido juntos?",
-                type: "text"
-            },
-            {
-                q: "Nuestro primer desayuno juntos, podr{iamos decir, fue nuestra primer cita o salida ¿Cómo te sentiste en ese momento, ampr mío?",
-                type: "text"
-            }
+            { q: "Nuestra primera cita estuvo llena de magia, esa primera vez en que pude verte y escuchar tu voz... ¿Cuál era el color de mi camisa?", options: ["Verde", "Blanca", "Azul", "No tenía"], correct: 3 },
+            { q: "Conocerte fue todo un misterio, uno muy hermoso e intrigante en el que tu nombre se iba descubriendo poco a poco ¿Cuál fue el segundo nombre que te puse cuando adiviné?", options: ["Rafael", "Camila", "Carlos", "Camilo"], correct: 2 },
+            { q: "Para mí, tu voz es una hermosa melodía que me relaja, que me lleva a un paraíso ¿Recuerdas cuándo fue la primera vez que te dije que tu voz es relajante?", options: ["24 de noviembre de 2025", "25 de noviembre de 2025", "26 de noviembre de 2025", "27 de noviembre de 2025"], correct: 1 },
+            { q: "¿Y la primera vez que te dije que eres muy perspicaz?", options: ["24 de noviembre de 2025", "25 de noviembre de 2025", "26 de noviembre de 2025", "27 de noviembre de 2025"], correct: 0 },
+            { q: "Sin duda, amor mío, conoceremos muchos lugares de este mundo, juntos. Quiero poder besarte en todos los países ¿Cuál es ese primer lugar que te pregunté si quieres acompañarme?", options: ["Vietnam", "Colombia", "Cuba", "Japón"], correct: 3 },
+            { q: "Una de las primeras cosas que creamos juntos fue nuestra lista de reproducción compartida, que se actualiza cada 24 h. ¿Cuál fue el primer nombre que se le puso?", options: ["Faticugo", "Faticol", "Econometría", "Cheesecake de frutos rojos"], correct: 1 },
+            { q: "¿Podrías describir el momento más preciado para ti de los que hasta ahora hemos vivido juntos?", type: "text" },
+            { q: "Nuestro primer desayuno juntos, podríamos decir, fue nuestra primera cita o salida ¿Cómo te sentiste en ese momento, amor mío?", type: "text" }
         ];
 
         let currentUserId = null;
@@ -298,16 +216,9 @@
             const code = codeInput.value.trim().toLowerCase(); 
             
             if (code !== "sagrada familia") { 
-                document.getElementById('login-error').classList.remove('hidden');
-                return;
+                document.getElementById('login-error').classList.remove('hidden'); return; 
             }
-
-            // INICIAMOS LA MÚSICA AL DAR CLIC EN ENTRAR (Cambio clave aquí)
-            if (!musicaIniciada) {
-                window.reproducirPistaActual();
-                musicaIniciada = true;
-            }
-
+            if (!musicaIniciada) { window.reproducirPistaActual(); musicaIniciada = true; }
             currentUserId = "novia_" + code.replace(/\s+/g, '');
             document.querySelector('button').innerText = "Verificando...";
             await checkStatus();
@@ -320,106 +231,89 @@
                 let data;
 
                 if (!docSnap.exists()) {
-                    data = { 
-                        currentQuestion: 0, 
-                        blockedUntil: null, 
-                        nextLevelUnlock: null,
-                        sorpresaVista: true 
-                    };
+                    data = { currentQuestion: 0, blockedUntil: null, nextLevelUnlock: null, sorpresaVista: true, imagenSorpresaVista: false };
                     await setDoc(docRef, data);
-                    
-                    mostrarSorpresaUnica(() => {
-                        procesarFlujoNormal(data);
-                    });
+                    mostrarSorpresaUnica(() => { procesarFlujoNormal(data); });
                     return; 
-                } else {
-                    data = docSnap.data();
-                }
+                } else { data = docSnap.data(); }
 
                 if (data.sorpresaVista !== true) {
                     await updateDoc(docRef, { sorpresaVista: true });
-                    
-                    mostrarSorpresaUnica(() => {
-                        procesarFlujoNormal(data);
-                    });
+                    mostrarSorpresaUnica(() => { procesarFlujoNormal(data); });
                     return; 
                 }
-
                 procesarFlujoNormal(data);
-                
             } catch (error) {
                 console.error(error);
                 alert("Error de conexión. Intenta abrirlo en modo Incógnito o verifica tu internet.");
             }
         }
 
+        // SORPRESA INICIAL (CODIGO)
         function mostrarSorpresaUnica(callback) {
             showScreen('one-time-surprise-screen');
             let timeLeft = 20; 
             const timerEl = document.getElementById('surprise-countdown');
             const barEl = document.getElementById('surprise-timer-bar');
-            
             barEl.style.width = '100%';
-            
             const interval = setInterval(() => {
-                timeLeft--;
-                timerEl.innerText = timeLeft;
-                barEl.style.width = `${(timeLeft / 20) * 100}%`;
-                
-                if (timeLeft <= 0) {
-                    clearInterval(interval);
-                    callback(); 
-                }
+                timeLeft--; timerEl.innerText = timeLeft; barEl.style.width = `${(timeLeft / 20) * 100}%`;
+                if (timeLeft <= 0) { clearInterval(interval); callback(); }
+            }, 1000);
+        }
+
+        // NUEVO: IMAGEN SORPRESA POR 20 SEGUNDOS
+        function mostrarImagenSorpresa(callback) {
+            showScreen('image-surprise-screen');
+            let timeLeft = 20; 
+            const timerEl = document.getElementById('img-surprise-countdown');
+            const barEl = document.getElementById('img-surprise-timer-bar');
+            barEl.style.width = '100%';
+            const interval = setInterval(() => {
+                timeLeft--; timerEl.innerText = timeLeft; barEl.style.width = `${(timeLeft / 20) * 100}%`;
+                if (timeLeft <= 0) { clearInterval(interval); callback(); }
             }, 1000);
         }
 
         function procesarFlujoNormal(data) {
             const now = Date.now();
-
             if (data.blockedUntil && data.blockedUntil.toMillis() > now) {
                 startCountdown(data.blockedUntil.toMillis(), 'penalty-countdown', 'block-screen');
                 return;
             } 
-            
             if (data.nextLevelUnlock && data.nextLevelUnlock.toMillis() > now) {
                 if (data.currentQuestion >= questions.length) {
-                        showScreen('success-screen');
-                        renderMemories(questions.length, 'success-memories');
+                        showScreen('success-screen'); renderMemories(questions.length, 'success-memories', data);
                 } else {
                         startCountdown(data.nextLevelUnlock.toMillis(), null, 'level-wait-screen');
-                        renderMemories(data.currentQuestion, 'wait-memories');
+                        renderMemories(data.currentQuestion, 'wait-memories', data);
                 }
                 return;
             }
-
             if (data.currentQuestion >= questions.length) {
-                showScreen('success-screen');
-                renderMemories(questions.length, 'success-memories');
+                showScreen('success-screen'); renderMemories(questions.length, 'success-memories', data);
             } else {
-                showScreen('quiz-screen');
-                loadQuestion(data.currentQuestion);
+                showScreen('quiz-screen'); loadQuestion(data.currentQuestion);
             }
         }
 
-        function renderMemories(completedIndex, containerId) {
+        function renderMemories(completedIndex, containerId, data) {
             const container = document.getElementById(containerId);
             container.innerHTML = ''; 
-
             if (completedIndex === 0) {
-                container.innerHTML = '<p class="italic text-gray-400 text-center text-xs">Aún no hay recuerdos...</p>';
-                return;
+                container.innerHTML = '<p class="italic text-gray-400 text-center text-xs">Aún no hay recuerdos...</p>'; return;
             }
-
             for (let i = 0; i < completedIndex; i++) {
                 const q = questions[i];
-                const correctText = q.options[q.correct];
-                
+                let correctText = "";
+                if (q.type === "text") {
+                    correctText = data && data[`respuesta_texto_${i}`] ? `"${data[`respuesta_texto_${i}`]}"` : "Mensaje enviado a tu amor 💌";
+                } else {
+                    correctText = q.options[q.correct];
+                }
                 const card = document.createElement('div');
                 card.className = "bg-pink-50 p-3 rounded-lg border border-pink-100 mb-2 shadow-sm";
-                card.innerHTML = `
-                    <p class="font-bold text-gray-800 mb-1 text-xs">❤️ ${q.q}</p>
-                    <p class="text-pink-600 font-semibold text-xs">R: ${correctText}</p>
-                `;
+                card.innerHTML = `<p class="font-bold text-gray-800 mb-1 text-xs">❤️ ${q.q}</p><p class="text-pink-600 font-semibold text-xs italic">R: ${correctText}</p>`;
                 container.appendChild(card);
             }
         }
@@ -430,40 +324,76 @@
             const container = document.getElementById('options-container');
             container.innerHTML = '';
 
-            questions[index].options.forEach((opt, i) => {
+            if (questions[index].type === "text") {
+                const textarea = document.createElement('textarea');
+                textarea.id = "text-answer";
+                textarea.className = "w-full p-4 border rounded-lg focus:border-pink-500 outline-none mb-4 text-gray-700 resize-none shadow-inner";
+                textarea.rows = 4;
+                textarea.placeholder = "Escribe tu hermoso mensaje aquí...";
+                
                 const btn = document.createElement('button');
-                btn.className = "w-full p-4 text-left border rounded-lg hover:bg-pink-50 hover:border-pink-300 transition mb-2";
-                btn.innerText = opt;
-                btn.onclick = () => submitAnswer(index, i);
-                container.appendChild(btn);
-            });
+                btn.className = "w-full p-4 text-center border rounded-lg bg-pink-500 text-white font-bold hover:bg-pink-600 transition mb-2 shadow-md";
+                btn.innerText = "Enviar Respuesta ❤️";
+                btn.onclick = () => window.submitTextAnswer(index);
+                
+                const errorMsg = document.createElement('p');
+                errorMsg.id = "text-error"; errorMsg.className = "text-red-500 text-sm mt-2 hidden"; errorMsg.innerText = "¡Por favor escríbeme algo antes de enviar! 🦆";
+
+                container.appendChild(textarea); container.appendChild(btn); container.appendChild(errorMsg);
+            } else {
+                questions[index].options.forEach((opt, i) => {
+                    const btn = document.createElement('button');
+                    btn.className = "w-full p-4 text-left border rounded-lg hover:bg-pink-50 hover:border-pink-300 transition mb-2";
+                    btn.innerText = opt;
+                    btn.onclick = () => submitAnswer(index, i);
+                    container.appendChild(btn);
+                });
+            }
         }
+
+        // Lógica de validación tras respuesta correcta/texto
+        async function procesarAcierto(docRef, data, qIndex, updateData) {
+            let vioImagen = data.imagenSorpresaVista === true;
+            
+            if (!vioImagen) { updateData.imagenSorpresaVista = true; }
+            await updateDoc(docRef, updateData);
+            
+            if (!vioImagen) {
+                mostrarImagenSorpresa(async () => { await checkStatus(); });
+            } else {
+                await checkStatus();
+            }
+        }
+
+        window.submitTextAnswer = async (qIndex) => {
+            const textValue = document.getElementById('text-answer').value.trim();
+            if (!textValue) { document.getElementById('text-error').classList.remove('hidden'); return; }
+            
+            const docRef = doc(db, "sorpresa", currentUserId);
+            const docSnap = await getDoc(docRef);
+            const data = docSnap.exists() ? docSnap.data() : {};
+            
+            const unlockTime = obtenerTiempoEsperaAleatorio();
+            const updateData = { currentQuestion: qIndex + 1, nextLevelUnlock: unlockTime, blockedUntil: null, [`respuesta_texto_${qIndex}`]: textValue };
+            
+            await procesarAcierto(docRef, data, qIndex, updateData);
+        };
 
         async function submitAnswer(qIndex, answerIndex) {
             const isCorrect = questions[qIndex].correct === answerIndex;
             const docRef = doc(db, "sorpresa", currentUserId);
 
             if (isCorrect) {
-                const unlockTime = new Date(Date.now() + SUCCESS_WAIT_HOURS * 60 * 60 * 1000);
+                const docSnap = await getDoc(docRef);
+                const data = docSnap.exists() ? docSnap.data() : {};
+                const unlockTime = obtenerTiempoEsperaAleatorio();
+                const updateData = { currentQuestion: qIndex + 1, nextLevelUnlock: unlockTime, blockedUntil: null };
                 
-                await updateDoc(docRef, { 
-                    currentQuestion: qIndex + 1,
-                    nextLevelUnlock: unlockTime,
-                    blockedUntil: null 
-                });
-                
-                if (qIndex + 1 >= questions.length) {
-                    showScreen('success-screen');
-                    renderMemories(qIndex + 1, 'success-memories');
-                } else {
-                    startCountdown(unlockTime.getTime(), null, 'level-wait-screen');
-                    renderMemories(qIndex + 1, 'wait-memories');
-                }
-
+                await procesarAcierto(docRef, data, qIndex, updateData);
             } else {
                 const releaseTime = new Date(Date.now() + PENALTY_HOURS * 60 * 60 * 1000); 
                 await updateDoc(docRef, { blockedUntil: releaseTime });
-                startCountdown(releaseTime.getTime(), 'penalty-countdown', 'block-screen');
+                await checkStatus();
             }
         }
 
@@ -475,11 +405,7 @@
                 const now = Date.now();
                 const diff = targetTime - now;
 
-                if (diff <= 0) {
-                    clearInterval(timerInterval);
-                    checkStatus();
-                    return;
-                }
+                if (diff <= 0) { clearInterval(timerInterval); checkStatus(); return; }
                 
                 if (elementId) {
                     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -490,27 +416,20 @@
                     let timeString = "";
                     if(days > 0) timeString += `${days}d `;
                     timeString += `${hours}h ${minutes}m ${seconds}s`;
-
                     const el = document.getElementById(elementId);
                     if (el) el.innerText = timeString;
                 }
             };
-
             updateTimer();
             timerInterval = setInterval(updateTimer, 1000);
         }
 
         function showScreen(id) {
-            const screens = ['login-screen', 'block-screen', 'level-wait-screen', 'quiz-screen', 'success-screen', 'one-time-surprise-screen'];
+            const screens = ['login-screen', 'block-screen', 'level-wait-screen', 'quiz-screen', 'success-screen', 'one-time-surprise-screen', 'image-surprise-screen'];
             screens.forEach(s => {
                 const el = document.getElementById(s);
-                if (s === id) {
-                    el.classList.remove('hidden');
-                    el.style.display = 'block';
-                } else {
-                    el.classList.add('hidden');
-                    el.style.display = 'none';
-                }
+                if (s === id) { el.classList.remove('hidden'); el.style.display = 'block'; } 
+                else { el.classList.add('hidden'); el.style.display = 'none'; }
             });
         }
     </script>
