@@ -40,16 +40,32 @@
             <button onclick="login()" class="w-full bg-pink-500 text-white py-3 rounded-lg font-semibold hover:bg-pink-600 transition">Entrar</button>
             <p id="login-error" class="text-red-500 text-sm mt-2 hidden">Clave incorrecta 😢</p>
         </div>
-        <div id="image-surprise-screen" class="hidden">
+               <div id="one-time-surprise-screen" class="hidden">
             <h2 class="text-xl font-bold text-pink-600 mb-4 animate-bounce">✨ ¡SECRETO REVELADO! ✨</h2>
-            <p class="text-gray-600 mb-6 text-sm">Anota esto rápido...</p>
+            <p class="text-gray-600 mb-6 text-sm">Anota esto rápido. Solo lo verás esta vez... es parte de nuestro destino.</p>
             <div class="bg-pink-50 rounded-xl p-6 shadow-inner border-2 border-dashed border-pink-400 mb-8 flex flex-col items-center justify-center text-center">
-                <span class="text-5xl font-mono font-black text-pink-600 tracking-[0.2em] ml-2 mt-2 mb-2">🐘🫂🌬🫂🫂C</span>
-                <span class="text-lg font-medium text-pink-500 mt-2">¿Descubrirás el código?</span>
+                <span class="text-xl font-bold text-pink-600 mb-2 leading-snug">¿Anotaste el código del otro día, amor mío?</span>
+                <span class="text-lg font-medium text-pink-500">El del otro día no era el correcto 😝, el correcto es:</span>
+                <span class="text-5xl font-mono font-black text-pink-600 tracking-[0.2em] ml-2 mt-2 mb-2">A🫂REA4</span>
+                <span class="text-lg font-medium text-pink-500 mt-2">¿Descubrirás de qué trata ese código de 6 letras, señorita Curis?</span>
             </div>
             <div class="progress-bar mb-2"><div id="surprise-timer-bar" class="progress-fill"></div></div>
             <p class="text-xs text-gray-400">Se autodestruye en <span id="surprise-countdown">20</span>s</p>
         </div>
+
+        <div id="image-surprise-screen" class="hidden">
+            <h2 class="text-xl font-bold text-pink-600 mb-4 animate-bounce">✨ ¡NUEVA PISTA REVELADA! ✨</h2>
+            <p class="text-gray-600 mb-6 text-sm">Anota esto rápido...</p>
+            <div class="bg-pink-50 rounded-xl p-6 shadow-inner border-2 border-dashed border-pink-400 mb-8 flex flex-col items-center justify-center text-center">
+                
+                <span class="text-5xl font-mono font-black text-pink-600 tracking-[0.2em] ml-2 mt-2 mb-2">🐘🫂🌬🫂🫂C</span>
+                <span class="text-lg font-medium text-pink-500 mt-2">¿Descubrirás el código?</span>
+                
+            </div>
+            <div class="progress-bar mb-2"><div id="img-surprise-timer-bar" class="progress-fill"></div></div>
+            <p class="text-xs text-gray-400">Se autodestruye en <span id="img-surprise-countdown">20</span>s</p>
+        </div>
+
 
         <div id="block-screen" class="hidden">
             <div class="text-6xl mb-4">⛔</div>
