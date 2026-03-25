@@ -40,32 +40,17 @@
             <button onclick="login()" class="w-full bg-pink-500 text-white py-3 rounded-lg font-semibold hover:bg-pink-600 transition">Entrar</button>
             <p id="login-error" class="text-red-500 text-sm mt-2 hidden">Clave incorrecta 😢</p>
         </div>
-               <div id="one-time-surprise-screen" class="hidden">
+        
+        <div id="image-surprise-screen" class="hidden">
             <h2 class="text-xl font-bold text-pink-600 mb-4 animate-bounce">✨ ¡SECRETO REVELADO! ✨</h2>
-            <p class="text-gray-600 mb-6 text-sm">Anota esto rápido. Solo lo verás esta vez... es parte de nuestro destino.</p>
+            <p class="text-gray-600 mb-6 text-sm">Anota esto rápido...</p>
             <div class="bg-pink-50 rounded-xl p-6 shadow-inner border-2 border-dashed border-pink-400 mb-8 flex flex-col items-center justify-center text-center">
-                <span class="text-xl font-bold text-pink-600 mb-2 leading-snug">¿Anotaste el código del otro día, amor mío?</span>
-                <span class="text-lg font-medium text-pink-500">El del otro día no era el correcto 😝, el correcto es:</span>
-                <span class="text-5xl font-mono font-black text-pink-600 tracking-[0.2em] ml-2 mt-2 mb-2">A🫂REA4</span>
-                <span class="text-lg font-medium text-pink-500 mt-2">¿Descubrirás de qué trata ese código de 6 letras, señorita Curis?</span>
+                <span class="text-5xl font-mono font-black text-pink-600 tracking-[0.2em] ml-2 mt-2 mb-2">🐘🫂🌬🫂🫂C</span>
+                <span class="text-lg font-medium text-pink-500 mt-2">¿Descubrirás el código?</span>
             </div>
             <div class="progress-bar mb-2"><div id="surprise-timer-bar" class="progress-fill"></div></div>
             <p class="text-xs text-gray-400">Se autodestruye en <span id="surprise-countdown">20</span>s</p>
         </div>
-
-        <div id="image-surprise-screen" class="hidden">
-            <h2 class="text-xl font-bold text-pink-600 mb-4 animate-bounce">✨ ¡NUEVA PISTA REVELADA! ✨</h2>
-            <p class="text-gray-600 mb-6 text-sm">Anota esto rápido...</p>
-            <div class="bg-pink-50 rounded-xl p-6 shadow-inner border-2 border-dashed border-pink-400 mb-8 flex flex-col items-center justify-center text-center">
-                
-                <span class="text-5xl font-mono font-black text-pink-600 tracking-[0.2em] ml-2 mt-2 mb-2">🐘🫂🌬🫂🫂C</span>
-                <span class="text-lg font-medium text-pink-500 mt-2">¿Descubrirás el código?</span>
-                
-            </div>
-            <div class="progress-bar mb-2"><div id="img-surprise-timer-bar" class="progress-fill"></div></div>
-            <p class="text-xs text-gray-400">Se autodestruye en <span id="img-surprise-countdown">20</span>s</p>
-        </div>
-
 
         <div id="block-screen" class="hidden">
             <div class="text-6xl mb-4">⛔</div>
@@ -78,6 +63,15 @@
             <div class="text-6xl mb-4">⏳❤️</div>
             <h2 class="text-xl font-bold text-pink-500 mb-2">¡Correcto!</h2>
             <p class="text-gray-600 mb-4">Has acertado, pero las mejores cosas se hacen esperar.</p>
+            
+            <!-- NUEVO: CONTENEDOR DE VÍDEO ANIMADO -->
+            <div class="w-full rounded-xl overflow-hidden shadow-md mb-6 border border-pink-100">
+                <video autoplay loop muted playsinline class="w-full h-40 object-cover pointer-events-none">
+                    <source src="https://github.com/afcolmenaresb/archivos-sorpresa/raw/refs/heads/main/Juguet%C3%B3n.mp4" type="video/mp4">
+                    Tu navegador no soporta el video.
+                </video>
+            </div>
+            
             <div class="bg-pink-50 p-4 rounded-xl border border-pink-100 mb-6 shadow-sm overflow-hidden">
                 <p class="text-pink-600 italic animate-pulse mb-4 text-sm">Mientras esperas el siguiente misterio, escucha esto...</p>
                 <audio id="reproductor-bg" controls class="w-full outline-none mb-4">Tu navegador no soporta el audio.</audio>
@@ -195,12 +189,12 @@
 
         // RESPUESTAS CAMUFLADAS (c_idx y opts en lugar de correct y options)
         const questions = [
-            { q: "Nuestra primera cita estuvo llena de magia, esa primera vez en que pude verte y escuchar tu voz... ¿Cuál era el color de mi camisa?", opts: ["Verde", "Blanca", "Azul", "No tenía"], c_idx: 12 / 4 }, // 3
-            { q: "Conocerte fue todo un misterio, uno muy hermoso e intrigante en el que tu nombre se iba descubriendo poco a poco ¿Cuál fue el segundo nombre que te puse cuando adiviné?", opts: ["Rafael", "Camila", "Carlos", "Camilo"], c_idx: 8 / 4 }, // 2
-            { q: "Para mí, tu voz es una hermosa melodía que me relaja, que me lleva a un paraíso ¿Recuerdas cuándo fue la primera vez que te dije que tu voz es relajante?", opts: ["24 de noviembre de 2025", "25 de noviembre de 2025", "26 de noviembre de 2025", "27 de noviembre de 2025"], c_idx: 5 % 4 }, // 1
-            { q: "¿Y la primera vez que te dije que eres muy perspicaz?", opts: ["24 de noviembre de 2025", "25 de noviembre de 2025", "26 de noviembre de 2025", "27 de noviembre de 2025"], c_idx: 0 * 5 }, // 0
-            { q: "Sin duda, amor mío, conoceremos muchos lugares de este mundo, juntos. Quiero poder besarte en todos los países ¿Cuál es ese primer lugar que te pregunté si quieres acompañarme?", opts: ["Vietnam", "Colombia", "Cuba", "Japón"], c_idx: 9 / 3 }, // 3
-            { q: "Una de las primeras cosas que creamos juntos fue nuestra lista de reproducción compartida, que se actualiza cada 24 h. ¿Cuál fue el primer nombre que se le puso?", opts: ["Faticugo", "Faticol", "Econometría", "Cheesecake de frutos rojos"], c_idx: 3 - 2 }, // 1
+            { q: "Nuestra primera cita estuvo llena de magia, esa primera vez en que pude verte y escuchar tu voz... ¿Cuál era el color de mi camisa?", opts: ["Verde", "Blanca", "Azul", "No tenía"], c_idx: 12 / 4 }, 
+            { q: "Conocerte fue todo un misterio, uno muy hermoso e intrigante en el que tu nombre se iba descubriendo poco a poco ¿Cuál fue el segundo nombre que te puse cuando adiviné?", opts: ["Rafael", "Camila", "Carlos", "Camilo"], c_idx: 8 / 4 }, 
+            { q: "Para mí, tu voz es una hermosa melodía que me relaja, que me lleva a un paraíso ¿Recuerdas cuándo fue la primera vez que te dije que tu voz es relajante?", opts: ["24 de noviembre de 2025", "25 de noviembre de 2025", "26 de noviembre de 2025", "27 de noviembre de 2025"], c_idx: 5 % 4 }, 
+            { q: "¿Y la primera vez que te dije que eres muy perspicaz?", opts: ["24 de noviembre de 2025", "25 de noviembre de 2025", "26 de noviembre de 2025", "27 de noviembre de 2025"], c_idx: 0 * 5 }, 
+            { q: "Sin duda, amor mío, conoceremos muchos lugares de este mundo, juntos. Quiero poder besarte en todos los países ¿Cuál es ese primer lugar que te pregunté si quieres acompañarme?", opts: ["Vietnam", "Colombia", "Cuba", "Japón"], c_idx: 9 / 3 }, 
+            { q: "Una de las primeras cosas que creamos juntos fue nuestra lista de reproducción compartida, que se actualiza cada 24 h. ¿Cuál fue el primer nombre que se le puso?", opts: ["Faticugo", "Faticol", "Econometría", "Cheesecake de frutos rojos"], c_idx: 3 - 2 }, 
             { q: "¿Podrías describir el momento más preciado para ti de los que hasta ahora hemos vivido juntos?", type: "text" },
             { q: "Nuestro primer desayuno juntos, podríamos decir, fue nuestra primera cita o salida ¿Cómo te sentiste en ese momento, amor mío?", type: "text" },
             { q: "¿Qué sentiste en el primer momento que besé tu piel, en el que besé tus hombros, tu espalda, tus piernas?", type: "text" }
@@ -216,7 +210,7 @@
             if (code !== "sagrada familia") { 
                 document.getElementById('login-error').classList.remove('hidden'); return; 
             }
-            if (!musicaIniciada) { window.reproducirPistaActual(); musicaIniciada = true; }
+            if (!window.musicaIniciada) { window.reproducirPistaActual(); window.musicaIniciada = true; }
             currentUserId = "novia_" + code.replace(/\s+/g, '');
             document.querySelector('button').innerText = "Verificando...";
             await checkStatus();
@@ -429,4 +423,3 @@
     </script>
 </body>
 </html>
-
