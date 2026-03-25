@@ -37,19 +37,35 @@
             <h1 class="text-2xl font-bold text-pink-600 mb-4">¡Hola, amor de mi vida! 🦆❤️🐘</h1>
             <p class="text-gray-600 mb-6">¡Has desbloqueado un nuevo nivel! Para continuar, debes ingresar la clave. (Solo tienes 2 pistas que puedes preguntarme por correo).</p>
             <input type="text" id="access-code" placeholder="Escribe la clave..." class="w-full p-3 border rounded-lg mb-4 text-center text-xl tracking-widest outline-none focus:border-pink-500 uppercase">
-            <button onclick="login()" class="w-full bg-pink-500 text-white py-3 rounded-lg font-semibold hover:bg-pink-600 transition">Entrar</button>
+            
+            <!-- Botón blindado con advertencia de error local -->
+            <button onclick="if(window.login) { window.login(); } else { alert('❌ Error: El sistema bloqueó la conexión a la base de datos. Si estás abriendo este archivo desde tu computadora (file://), súbelo a GitHub para que funcione.'); }" class="w-full bg-pink-500 text-white py-3 rounded-lg font-semibold hover:bg-pink-600 transition">Entrar</button>
+            
             <p id="login-error" class="text-red-500 text-sm mt-2 hidden">Clave incorrecta 😢</p>
         </div>
-        
-        <div id="image-surprise-screen" class="hidden">
+
+        <div id="one-time-surprise-screen" class="hidden">
             <h2 class="text-xl font-bold text-pink-600 mb-4 animate-bounce">✨ ¡SECRETO REVELADO! ✨</h2>
+            <p class="text-gray-600 mb-6 text-sm">Anota esto rápido. Solo lo verás esta vez... es parte de nuestro destino.</p>
+            <div class="bg-pink-50 rounded-xl p-6 shadow-inner border-2 border-dashed border-pink-400 mb-8 flex flex-col items-center justify-center text-center">
+                <span class="text-xl font-bold text-pink-600 mb-2 leading-snug">¿Anotaste el código del otro día, amor mío?</span>
+                <span class="text-lg font-medium text-pink-500">El del otro día no era el correcto 😝, el correcto es:</span>
+                <span class="text-5xl font-mono font-black text-pink-600 tracking-[0.2em] ml-2 mt-2 mb-2">A🫂REA4</span>
+                <span class="text-lg font-medium text-pink-500 mt-2">¿Descubrirás de qué trata ese código de 6 letras, señorita Curis?</span>
+            </div>
+            <div class="progress-bar mb-2"><div id="surprise-timer-bar" class="progress-fill"></div></div>
+            <p class="text-xs text-gray-400">Se autodestruye en <span id="surprise-countdown">20</span>s</p>
+        </div>
+
+        <div id="image-surprise-screen" class="hidden">
+            <h2 class="text-xl font-bold text-pink-600 mb-4 animate-bounce">✨ ¡NUEVA PISTA REVELADA! ✨</h2>
             <p class="text-gray-600 mb-6 text-sm">Anota esto rápido...</p>
             <div class="bg-pink-50 rounded-xl p-6 shadow-inner border-2 border-dashed border-pink-400 mb-8 flex flex-col items-center justify-center text-center">
                 <span class="text-5xl font-mono font-black text-pink-600 tracking-[0.2em] ml-2 mt-2 mb-2">🐘🫂🌬🫂🫂C</span>
                 <span class="text-lg font-medium text-pink-500 mt-2">¿Descubrirás el código?</span>
             </div>
-            <div class="progress-bar mb-2"><div id="surprise-timer-bar" class="progress-fill"></div></div>
-            <p class="text-xs text-gray-400">Se autodestruye en <span id="surprise-countdown">20</span>s</p>
+            <div class="progress-bar mb-2"><div id="img-surprise-timer-bar" class="progress-fill"></div></div>
+            <p class="text-xs text-gray-400">Se autodestruye en <span id="img-surprise-countdown">20</span>s</p>
         </div>
 
         <div id="block-screen" class="hidden">
@@ -64,14 +80,13 @@
             <h2 class="text-xl font-bold text-pink-500 mb-2">¡Correcto!</h2>
             <p class="text-gray-600 mb-4">Has acertado, pero las mejores cosas se hacen esperar.</p>
             
-            <!-- NUEVO: CONTENEDOR DE VÍDEO ANIMADO -->
             <div class="w-full rounded-xl overflow-hidden shadow-md mb-6 border border-pink-100">
                 <video autoplay loop muted playsinline class="w-full h-40 object-cover pointer-events-none">
                     <source src="https://github.com/afcolmenaresb/archivos-sorpresa/raw/refs/heads/main/Juguet%C3%B3n.mp4" type="video/mp4">
                     Tu navegador no soporta el video.
                 </video>
             </div>
-            
+
             <div class="bg-pink-50 p-4 rounded-xl border border-pink-100 mb-6 shadow-sm overflow-hidden">
                 <p class="text-pink-600 italic animate-pulse mb-4 text-sm">Mientras esperas el siguiente misterio, escucha esto...</p>
                 <audio id="reproductor-bg" controls class="w-full outline-none mb-4">Tu navegador no soporta el audio.</audio>
@@ -82,6 +97,7 @@
                 </div>
                 <p class="text-xs text-gray-400 mt-3">La música te acompañará en todo el viaje.</p>
             </div>
+            
             <div class="border-t border-gray-100 pt-4">
                 <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-3">📜 Recuerdos Desbloqueados</h3>
                 <div id="wait-memories" class="memories-scroll text-left space-y-3 text-sm text-gray-600"></div>
@@ -138,7 +154,7 @@
         let trackActual = 0;
         const reproductor = document.getElementById('reproductor-bg');
         const indicador = document.getElementById('pista-indicador');
-        let musicaIniciada = false;
+        window.musicaIniciada = false;
 
         window.reproducirPistaActual = function() {
             if (!reproductor) return;
@@ -150,13 +166,13 @@
         window.reproducirSiguiente = function() {
             trackActual++;
             if (trackActual >= playlist.length) { trackActual = 0; }
-            reproducirPistaActual();
+            window.reproducirPistaActual();
         };
 
         window.reproducirAnterior = function() {
             trackActual--;
             if (trackActual < 0) { trackActual = playlist.length - 1; }
-            reproducirPistaActual();
+            window.reproducirPistaActual();
         };
 
         if(reproductor) { reproductor.addEventListener('ended', window.reproducirSiguiente); }
@@ -187,7 +203,6 @@
             return new Date(Date.now() + randomHoras * 60 * 60 * 1000);
         }
 
-        // RESPUESTAS CAMUFLADAS (c_idx y opts en lugar de correct y options)
         const questions = [
             { q: "Nuestra primera cita estuvo llena de magia, esa primera vez en que pude verte y escuchar tu voz... ¿Cuál era el color de mi camisa?", opts: ["Verde", "Blanca", "Azul", "No tenía"], c_idx: 12 / 4 }, 
             { q: "Conocerte fue todo un misterio, uno muy hermoso e intrigante en el que tu nombre se iba descubriendo poco a poco ¿Cuál fue el segundo nombre que te puse cuando adiviné?", opts: ["Rafael", "Camila", "Carlos", "Camilo"], c_idx: 8 / 4 }, 
@@ -204,16 +219,29 @@
         let timerInterval = null;
 
         window.login = async () => {
-            const codeInput = document.getElementById('access-code');
-            const code = codeInput.value.trim().toLowerCase(); 
-            
-            if (code !== "sagrada familia") { 
-                document.getElementById('login-error').classList.remove('hidden'); return; 
+            try {
+                const codeInput = document.getElementById('access-code');
+                const code = codeInput.value.trim().toLowerCase(); 
+                
+                if (code !== "sagrada familia") { 
+                    document.getElementById('login-error').classList.remove('hidden'); return; 
+                }
+                document.getElementById('login-error').classList.add('hidden');
+
+                if (!window.musicaIniciada && typeof window.reproducirPistaActual === 'function') { 
+                    window.reproducirPistaActual(); 
+                    window.musicaIniciada = true; 
+                }
+                
+                currentUserId = "novia_" + code.replace(/\s+/g, '');
+                
+                const btn = document.querySelector('#login-screen button');
+                if(btn) btn.innerText = "Verificando...";
+                
+                await checkStatus();
+            } catch (err) {
+                alert("❌ Error interno: " + err.message);
             }
-            if (!window.musicaIniciada) { window.reproducirPistaActual(); window.musicaIniciada = true; }
-            currentUserId = "novia_" + code.replace(/\s+/g, '');
-            document.querySelector('button').innerText = "Verificando...";
-            await checkStatus();
         };
 
         async function checkStatus() {
@@ -237,7 +265,7 @@
                 procesarFlujoNormal(data);
             } catch (error) {
                 console.error(error);
-                alert("Error de conexión. Intenta abrirlo en modo Incógnito o verifica tu internet.");
+                alert("❌ Falló la conexión con Firebase: " + error.message + "\n\nAsegúrate de probar esto subido a GitHub y no desde un archivo local.");
             }
         }
 
@@ -267,15 +295,19 @@
 
         function procesarFlujoNormal(data) {
             const now = Date.now();
-            if (data.blockedUntil && data.blockedUntil.toMillis() > now) {
-                startCountdown(data.blockedUntil.toMillis(), 'penalty-countdown', 'block-screen');
+            
+            const blockedTime = data.blockedUntil ? (data.blockedUntil.toMillis ? data.blockedUntil.toMillis() : new Date(data.blockedUntil).getTime()) : 0;
+            const unlockTime = data.nextLevelUnlock ? (data.nextLevelUnlock.toMillis ? data.nextLevelUnlock.toMillis() : new Date(data.nextLevelUnlock).getTime()) : 0;
+
+            if (blockedTime > now) {
+                startCountdown(blockedTime, 'penalty-countdown', 'block-screen');
                 return;
             } 
-            if (data.nextLevelUnlock && data.nextLevelUnlock.toMillis() > now) {
+            if (unlockTime > now) {
                 if (data.currentQuestion >= questions.length) {
                         showScreen('success-screen'); renderMemories(questions.length, 'success-memories', data);
                 } else {
-                        startCountdown(data.nextLevelUnlock.toMillis(), null, 'level-wait-screen');
+                        startCountdown(unlockTime, null, 'level-wait-screen');
                         renderMemories(data.currentQuestion, 'wait-memories', data);
                 }
                 return;
