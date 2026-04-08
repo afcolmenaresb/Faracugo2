@@ -37,13 +37,10 @@
             <h1 class="text-2xl font-bold text-pink-600 mb-4">¡Hola, amor de mi vida! 🦆❤️🐘</h1>
             <p class="text-gray-600 mb-6">¡Has desbloqueado un nuevo nivel! Para continuar, debes ingresar la clave. (Solo tienes 2 pistas que puedes preguntarme por correo).</p>
             <input type="text" id="access-code" placeholder="Escribe la clave..." class="w-full p-3 border rounded-lg mb-4 text-center text-xl tracking-widest outline-none focus:border-pink-500 uppercase">
-            
-            <!-- Botón blindado con advertencia de error local -->
             <button onclick="if(window.login) { window.login(); } else { alert('❌ Error: El sistema bloqueó la conexión a la base de datos. Si estás abriendo este archivo desde tu computadora (file://), súbelo a GitHub para que funcione.'); }" class="w-full bg-pink-500 text-white py-3 rounded-lg font-semibold hover:bg-pink-600 transition">Entrar</button>
-            
             <p id="login-error" class="text-red-500 text-sm mt-2 hidden">Clave incorrecta 😢</p>
         </div>
-
+        
         <div id="one-time-surprise-screen" class="hidden">
             <h2 class="text-xl font-bold text-pink-600 mb-4 animate-bounce">✨ ¡SECRETO REVELADO! ✨</h2>
             <p class="text-gray-600 mb-6 text-sm">Anota esto rápido. Solo lo verás esta vez... es parte de nuestro destino.</p>
@@ -66,6 +63,20 @@
             </div>
             <div class="progress-bar mb-2"><div id="img-surprise-timer-bar" class="progress-fill"></div></div>
             <p class="text-xs text-gray-400">Se autodestruye en <span id="img-surprise-countdown">20</span>s</p>
+        </div>
+
+        <div id="image-surprise-screen-3" class="hidden">
+            <h2 class="text-xl font-bold text-pink-600 mb-4 animate-pulse">✨ ¡UN RECUERDO HERMOSO! ✨</h2>
+            <div class="bg-pink-50 rounded-xl p-4 shadow-inner border-2 border-dashed border-pink-400 mb-6 flex flex-col items-center justify-center text-center">
+                
+                <img src="https://raw.githubusercontent.com/afcolmenaresb/archivos-sorpresa/refs/heads/main/All%20inclusive.jpg" alt="Nuestra Sorpresa" class="rounded-lg shadow-md mb-4 w-full h-48 object-cover">
+                
+                <span class="text-sm font-medium text-pink-500">
+                    ¿Adivinarás de qué se trata, amor mío?
+                </span>
+            </div>
+            <div class="progress-bar mb-2"><div id="img-surprise-timer-bar-3" class="progress-fill"></div></div>
+            <p class="text-xs text-gray-400">Continúa en <span id="img-surprise-countdown-3">20</span>s</p>
         </div>
 
         <div id="block-screen" class="hidden">
@@ -252,7 +263,7 @@
                 let data;
 
                 if (!docSnap.exists()) {
-                    data = { currentQuestion: 0, blockedUntil: null, nextLevelUnlock: null, sorpresaVista: true, imagenSorpresaVista: false };
+                    data = { currentQuestion: 0, blockedUntil: null, nextLevelUnlock: null, sorpresaVista: true, imagenSorpresaVista: false, terceraSorpresaVista: false };
                     await setDoc(docRef, data);
                     mostrarSorpresaUnica(() => { procesarFlujoNormal(data); });
                     return; 
@@ -263,6 +274,14 @@
                     mostrarSorpresaUnica(() => { procesarFlujoNormal(data); });
                     return; 
                 }
+
+                // NUEVA LÓGICA: Mostrar la Sorpresa 3 al iniciar sesión si no la ha visto
+                if (data.terceraSorpresaVista !== true) {
+                    await updateDoc(docRef, { terceraSorpresaVista: true });
+                    mostrarTerceraSorpresa(() => { procesarFlujoNormal(data); });
+                    return;
+                }
+
                 procesarFlujoNormal(data);
             } catch (error) {
                 console.error(error);
@@ -287,6 +306,19 @@
             let timeLeft = 20; 
             const timerEl = document.getElementById('img-surprise-countdown');
             const barEl = document.getElementById('img-surprise-timer-bar');
+            barEl.style.width = '100%';
+            const interval = setInterval(() => {
+                timeLeft--; timerEl.innerText = timeLeft; barEl.style.width = `${(timeLeft / 20) * 100}%`;
+                if (timeLeft <= 0) { clearInterval(interval); callback(); }
+            }, 1000);
+        }
+
+        // FUNCIÓN PARA LA TERCERA SORPRESA
+        function mostrarTerceraSorpresa(callback) {
+            showScreen('image-surprise-screen-3');
+            let timeLeft = 20; 
+            const timerEl = document.getElementById('img-surprise-countdown-3');
+            const barEl = document.getElementById('img-surprise-timer-bar-3');
             barEl.style.width = '100%';
             const interval = setInterval(() => {
                 timeLeft--; timerEl.innerText = timeLeft; barEl.style.width = `${(timeLeft / 20) * 100}%`;
@@ -446,7 +478,7 @@
         }
 
         function showScreen(id) {
-            const screens = ['login-screen', 'block-screen', 'level-wait-screen', 'quiz-screen', 'success-screen', 'one-time-surprise-screen', 'image-surprise-screen'];
+            const screens = ['login-screen', 'block-screen', 'level-wait-screen', 'quiz-screen', 'success-screen', 'one-time-surprise-screen', 'image-surprise-screen', 'image-surprise-screen-3'];
             screens.forEach(s => {
                 const el = document.getElementById(s);
                 if (s === id) { el.classList.remove('hidden'); el.style.display = 'block'; } 
