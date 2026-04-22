@@ -236,6 +236,7 @@
                 const codeInput = document.getElementById('access-code');
                 const code = codeInput.value.trim().toLowerCase(); 
                 
+                // 1. PON AQUÍ TU NUEVA CONTRASEÑA EN MINÚSCULAS
                 if (code !== "heterei") { 
                     document.getElementById('login-error').classList.remove('hidden'); return; 
                 }
@@ -246,7 +247,8 @@
                     window.musicaIniciada = true; 
                 }
                 
-                currentUserId = "novia_" + code.replace(/\s+/g, '');
+                // 2. ¡EL TRUCO MAGICO! Forzamos a que lea el archivo viejo de Firebase
+                currentUserId = "novia_sagradafamilia";
                 
                 const btn = document.querySelector('#login-screen button');
                 if(btn) btn.innerText = "Verificando...";
