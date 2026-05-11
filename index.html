@@ -236,10 +236,35 @@
                 const codeInput = document.getElementById('access-code');
                 const code = codeInput.value.trim().toLowerCase(); 
                 
-                // 1. PON AQUÍ TU NUEVA CONTRASEÑA EN MINÚSCULAS
+                // --- NUEVA LÓGICA DE REGISTRO DE INTENTOS FALLIDOS ---
                 if (code !== "che mborayhu") { 
-                    document.getElementById('login-error').classList.remove('hidden'); return; 
+                    document.getElementById('login-error').classList.remove('hidden'); 
+                    
+                    // Si el código NO está vacío, lo guardamos en un documento especial en Firebase
+                    if (code !== "") {
+                        try {
+                            const intentosRef = doc(db, "sorpresa", "intentos_fallidos");
+                            const intentosSnap = await getDoc(intentosRef);
+                            
+                            const fechaHora = new Date().toLocaleString();
+                            const nuevoIntento = `[${fechaHora}] Intentó: "${code}"`;
+
+                            if (!intentosSnap.exists()) {
+                                await setDoc(intentosRef, { registro: [nuevoIntento] });
+                            } else {
+                                const datosActuales = intentosSnap.data();
+                                const registroActualizado = datosActuales.registro || [];
+                                registroActualizado.push(nuevoIntento);
+                                await updateDoc(intentosRef, { registro: registroActualizado });
+                            }
+                        } catch (logError) {
+                            console.log("No se pudo registrar el intento fallido en Firebase.", logError);
+                        }
+                    }
+                    return; 
                 }
+                // --- FIN DE LA NUEVA LÓGICA ---
+
                 document.getElementById('login-error').classList.add('hidden');
 
                 if (!window.musicaIniciada && typeof window.reproducirPistaActual === 'function') { 
@@ -247,7 +272,7 @@
                     window.musicaIniciada = true; 
                 }
                 
-                // 2. ¡EL TRUCO MAGICO! Forzamos a que lea el archivo viejo de Firebase
+                // Forzamos a que lea el archivo viejo de Firebase
                 currentUserId = "novia_sagradafamilia";
                 
                 const btn = document.querySelector('#login-screen button');
@@ -258,7 +283,7 @@
                 alert("❌ Error interno: " + err.message);
             }
         };
-
+        
         async function checkStatus() {
             try {
                 const docRef = doc(db, "sorpresa", currentUserId);
