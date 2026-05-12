@@ -117,7 +117,19 @@
             <div id="options-container" class="space-y-3"></div>
         </div>
 
-        <!-- NUEVA PANTALLA: REVELACIÓN PROGRESIVA DE VIDEO -->
+        <!-- NUEVA PANTALLA: CHECKPOINT PARA EL CÓDIGO DEL VIDEO -->
+        <div id="checkpoint-screen" class="hidden">
+            <div class="mb-4"><span class="text-xs font-bold text-pink-400 tracking-widest uppercase">¡NUEVO NIVEL ALCANZADO!</span></div>
+            <h2 class="text-xl font-bold text-gray-800 mb-4 animate-pulse">✨ ¡Casi lo logras! ✨</h2>
+            <p id="checkpoint-text" class="text-gray-600 mb-6 text-sm"></p>
+            
+            <input type="text" id="checkpoint-input" placeholder="Escribe el código aquí..." class="w-full p-4 border rounded-lg mb-4 text-center text-xl outline-none focus:border-pink-500 uppercase shadow-inner text-gray-700">
+            
+            <button id="checkpoint-btn" class="w-full bg-pink-500 text-white py-4 rounded-lg font-bold hover:bg-pink-600 transition shadow-md">Desbloquear Nivel 🔓</button>
+            <p id="checkpoint-error" class="text-red-500 text-sm mt-3 hidden font-medium">Código incorrecto 😢</p>
+        </div>
+
+        <!-- PANTALLA: REVELACIÓN PROGRESIVA DE VIDEO -->
         <div id="video-reveal-screen" class="hidden">
             <h1 class="text-3xl font-bold text-pink-600 mb-2">✨ ¡NUEVO FRAGMENTO! ✨</h1>
             <p id="video-reveal-text" class="text-gray-700 mb-4 text-sm">Has desbloqueado una pieza más del rompecabezas...</p>
@@ -130,10 +142,10 @@
             </div>
 
             <!-- El botón de intriga aparece SOLO cuando el video termina -->
-            <div id="intrigue-message" class="hidden bg-pink-50 rounded-lg p-4 text-center border border-pink-200 mb-4 fade-in">
-                <p id="intrigue-title" class="text-lg font-bold text-pink-600 mb-3">¿Descubrirás cómo continúa?</p>
-                <button id="continue-video-btn" class="w-full bg-pink-500 text-white py-3 rounded-lg font-semibold hover:bg-pink-600 transition shadow-md">
-                    Guardar recuerdo y esperar la siguiente pista ⏳
+            <div id="intrigue-message" class="hidden bg-pink-50 rounded-lg p-5 text-center border border-pink-200 mb-4 fade-in shadow-inner">
+                <p id="intrigue-title" class="text-lg font-bold text-pink-600 mb-4 leading-snug">¿Podrá la paciencia ser fuerte para la continuación de este vídeo?</p>
+                <button id="continue-video-btn" class="w-full bg-pink-500 text-white py-3 rounded-lg font-bold hover:bg-pink-600 transition shadow-md">
+                    Ver de nuevo 🔄
                 </button>
             </div>
 
@@ -221,8 +233,6 @@
             return new Date(Date.now() + randomHoras * 60 * 60 * 1000);
         }
 
-        // --- LA MAGIA: EL ROMPECABEZAS AUDIOVISUAL ---
-        // Todas las preguntas primero, y el video al final como recompensa
         const questions = [
             { q: "Nuestra primera cita estuvo llena de magia, esa primera vez en que pude verte y escuchar tu voz... ¿Cuál era el color de mi camisa?", opts: ["Verde", "Blanca", "Azul", "No tenía"], c_idx: 12 / 4 }, 
             { q: "Conocerte fue todo un misterio, uno muy hermoso e intrigante en el que tu nombre se iba descubriendo poco a poco ¿Cuál fue el segundo nombre que te puse cuando adiviné?", opts: ["Rafael", "Camila", "Carlos", "Camilo"], c_idx: 8 / 4 }, 
@@ -235,19 +245,34 @@
             { q: "¿Qué sentiste en el primer momento que besé tu piel, en el que besé tus hombros, tu espalda, tus piernas?", type: "text" },
             { q: "Para ti ¿Cómo sería un día perfecto entre nosotros dos?", type: "text" },
 
-            // --- VIDEO PARTE 1 (Aparece tras responder la última pregunta) ---
-            { type: "video", url: "https://github.com/afcolmenaresb/archivos-sorpresa/raw/refs/heads/main/Plan%20cumple%201.1.mp4", text: "¿Descubrirás cómo continúa, pequeña mía? 🧩" }
+            // --- NUEVO PASO: EL CHECKPOINT DEL CÓDIGO (No requiere tiempo de espera para llegar al video) ---
+            { 
+                type: "checkpoint", 
+                code: "nuestra familia es lo más sagrado", 
+                text: "Has alcanzado un nuevo nivel. Para desbloquear el siguiente, envíame un mensaje confirmando que has llegado hasta aquí, y recibirás un código." 
+            },
+
+            // --- VIDEO PARTE 1 (Aparece inmediatamente después de poner el código correcto) ---
+            { 
+                type: "video", 
+                url: "https://github.com/afcolmenaresb/archivos-sorpresa/raw/refs/heads/main/Plan%20cumple%201.1.mp4", 
+                text: "¡Has desbloqueado el primer fragmento de un gran recuerdo! 🧩" 
+            }
         ];
 
         let currentUserId = null;
         let timerInterval = null;
+
+        // Función para normalizar texto (quita tildes y mayúsculas para evitar errores tontos)
+        const normalizeString = (str) => {
+            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
+        };
 
         window.login = async () => {
             try {
                 const codeInput = document.getElementById('access-code');
                 const code = codeInput.value.trim().toLowerCase(); 
                 
-                // --- NUEVA LÓGICA DE REGISTRO DE INTENTOS FALLIDOS ---
                 if (code !== "che mborayhu") { 
                     document.getElementById('login-error').classList.remove('hidden'); 
                     
@@ -256,7 +281,7 @@
                             const intentosRef = doc(db, "sorpresa", "intentos_fallidos");
                             const intentosSnap = await getDoc(intentosRef);
                             const fechaHora = new Date().toLocaleString();
-                            const nuevoIntento = `[${fechaHora}] Intentó: "${code}"`;
+                            const nuevoIntento = `[${fechaHora}] Intentó en Inicio: "${code}"`;
 
                             if (!intentosSnap.exists()) {
                                 await setDoc(intentosRef, { registro: [nuevoIntento] });
@@ -266,9 +291,7 @@
                                 registroActualizado.push(nuevoIntento);
                                 await updateDoc(intentosRef, { registro: registroActualizado });
                             }
-                        } catch (logError) {
-                            console.log("No se pudo registrar el intento fallido en Firebase.", logError);
-                        }
+                        } catch (logError) { console.log(logError); }
                     }
                     return; 
                 }
@@ -280,7 +303,6 @@
                     window.musicaIniciada = true; 
                 }
                 
-                // Forzamos a que lea el archivo viejo de Firebase
                 currentUserId = "novia_sagradafamilia";
                 
                 const btn = document.querySelector('#login-screen button');
@@ -388,10 +410,13 @@
                 renderMemories(questions.length, 'video-memories', data);
             } else {
                 const step = questions[data.currentQuestion];
-                if (step.type === "video" || step.type === "video_final") {
+                if (step.type === "video") {
                     showScreen('video-reveal-screen');
                     loadVideoStep(data.currentQuestion);
                     renderMemories(data.currentQuestion, 'video-memories', data);
+                } else if (step.type === "checkpoint") {
+                    showScreen('checkpoint-screen');
+                    loadCheckpoint(data.currentQuestion);
                 } else {
                     showScreen('quiz-screen'); 
                     loadQuestion(data.currentQuestion);
@@ -399,44 +424,81 @@
             }
         }
 
-        function loadVideoStep(index) {
+        // --- FUNCIÓN DEL CHECKPOINT DEL CÓDIGO ---
+        function loadCheckpoint(index) {
             const step = questions[index];
-            document.getElementById('video-reveal-text').innerText = step.text || "Has desbloqueado una pieza más...";
+            document.getElementById('checkpoint-text').innerText = step.text;
             
-            const videoEl = document.getElementById('revealed-video');
-            const msgEl = document.getElementById('intrigue-message');
-            const titleEl = document.getElementById('intrigue-title');
-            const btn = document.getElementById('continue-video-btn');
+            const input = document.getElementById('checkpoint-input');
+            const btn = document.getElementById('checkpoint-btn');
+            const error = document.getElementById('checkpoint-error');
             
-            msgEl.classList.add('hidden');
-            videoEl.src = step.url;
-            videoEl.load();
+            input.value = "";
+            error.classList.add('hidden');
             
-            if(step.type === "video_final") {
-                titleEl.innerText = "¡Este es el destino final! Te amo ❤️";
-                btn.innerText = "Volver a ver nuestra historia";
-                btn.onclick = () => { window.location.reload(); };
-                videoEl.onended = () => { msgEl.classList.remove('hidden'); };
-            } else {
-                titleEl.innerText = "¿Descubrirás cómo continúa?";
-                btn.innerText = "Guardar recuerdo y esperar la siguiente pista ⏳";
-                
-                videoEl.onended = () => { msgEl.classList.remove('hidden'); };
-                
-                btn.onclick = async () => {
-                    btn.innerText = "Guardando...";
+            btn.onclick = async () => {
+                const val = input.value;
+                if (normalizeString(val) === normalizeString(step.code)) {
+                    btn.innerText = "Desbloqueando...";
                     btn.disabled = true;
                     
                     const docRef = doc(db, "sorpresa", currentUserId);
                     const docSnap = await getDoc(docRef);
                     const data = docSnap.exists() ? docSnap.data() : {};
                     
-                    const unlockTime = obtenerTiempoEsperaAleatorio();
-                    const updateData = { currentQuestion: index + 1, nextLevelUnlock: unlockTime, blockedUntil: null };
-                    
+                    // Pasa al video INMEDIATAMENTE (sin tiempo de espera)
+                    const updateData = { currentQuestion: index + 1, nextLevelUnlock: null, blockedUntil: null };
                     await procesarAcierto(docRef, data, index, updateData);
-                };
+                } else {
+                    error.classList.remove('hidden');
+                    
+                    // Registra intentos fallidos del código también
+                    if (val !== "") {
+                        try {
+                            const intentosRef = doc(db, "sorpresa", "intentos_fallidos");
+                            const intentosSnap = await getDoc(intentosRef);
+                            const fechaHora = new Date().toLocaleString();
+                            const nuevoIntento = `[${fechaHora}] Intentó en Checkpoint: "${val}"`;
+
+                            if (!intentosSnap.exists()) { await setDoc(intentosRef, { registro: [nuevoIntento] }); } 
+                            else {
+                                const datosActuales = intentosSnap.data();
+                                const registroActualizado = datosActuales.registro || [];
+                                registroActualizado.push(nuevoIntento);
+                                await updateDoc(intentosRef, { registro: registroActualizado });
+                            }
+                        } catch (logError) { console.log(logError); }
+                    }
+                }
+            };
+        }
+
+        // --- FUNCIÓN DEL VIDEO ---
+        function loadVideoStep(index) {
+            const step = questions[index];
+            document.getElementById('video-reveal-text').innerText = step.text || "Has desbloqueado una pieza más...";
+            
+            const videoEl = document.getElementById('revealed-video');
+            const msgEl = document.getElementById('intrigue-message');
+            const btn = document.getElementById('continue-video-btn');
+            
+            // Pausar música de fondo si está sonando
+            if (window.reproductor) {
+                window.reproductor.pause();
             }
+            
+            msgEl.classList.add('hidden');
+            videoEl.src = step.url;
+            videoEl.load();
+            
+            // Cuando el video termina, muestra la frase de intriga y el botón de repetir
+            videoEl.onended = () => { msgEl.classList.remove('hidden'); };
+            
+            btn.onclick = () => {
+                videoEl.currentTime = 0;
+                videoEl.play();
+                msgEl.classList.add('hidden');
+            };
         }
 
         function renderMemories(completedIndex, containerId, data) {
@@ -447,7 +509,7 @@
             }
             for (let i = 0; i < completedIndex; i++) {
                 const q = questions[i];
-                if(q.type === "video" || q.type === "video_final") continue; 
+                if(q.type === "video" || q.type === "checkpoint") continue; 
 
                 let correctText = "";
                 if (q.type === "text") {
@@ -497,9 +559,10 @@
 
         async function procesarAcierto(docRef, data, qIndex, updateData) {
             let vioImagen = data.imagenSorpresaVista === true;
-            const acabaDeVerVideo = questions[qIndex].type === "video";
+            // No mostrar la imagen sorpresa si justo acaba de pasar el checkpoint o ver un video
+            const esTransicionRapida = questions[qIndex].type === "video" || questions[qIndex].type === "checkpoint";
 
-            if (!vioImagen && !acabaDeVerVideo) { 
+            if (!vioImagen && !esTransicionRapida) { 
                 updateData.imagenSorpresaVista = true; 
                 await updateDoc(docRef, updateData);
                 mostrarImagenSorpresa(async () => { await checkStatus(); });
@@ -517,7 +580,10 @@
             const docSnap = await getDoc(docRef);
             const data = docSnap.exists() ? docSnap.data() : {};
             
-            const unlockTime = obtenerTiempoEsperaAleatorio();
+            const nextQ = questions[qIndex + 1];
+            // Si la siguiente pantalla es el checkpoint o el video, el tiempo de espera es NULO (inmediato)
+            const unlockTime = (nextQ && (nextQ.type === "checkpoint" || nextQ.type === "video")) ? null : obtenerTiempoEsperaAleatorio();
+            
             const updateData = { currentQuestion: qIndex + 1, nextLevelUnlock: unlockTime, blockedUntil: null, [`respuesta_texto_${qIndex}`]: textValue };
             
             await procesarAcierto(docRef, data, qIndex, updateData);
@@ -530,7 +596,11 @@
             if (isCorrect) {
                 const docSnap = await getDoc(docRef);
                 const data = docSnap.exists() ? docSnap.data() : {};
-                const unlockTime = obtenerTiempoEsperaAleatorio();
+                
+                const nextQ = questions[qIndex + 1];
+                // Si la siguiente pantalla es el checkpoint o el video, el tiempo de espera es NULO (inmediato)
+                const unlockTime = (nextQ && (nextQ.type === "checkpoint" || nextQ.type === "video")) ? null : obtenerTiempoEsperaAleatorio();
+                
                 const updateData = { currentQuestion: qIndex + 1, nextLevelUnlock: unlockTime, blockedUntil: null };
                 
                 await procesarAcierto(docRef, data, qIndex, updateData);
@@ -569,7 +639,7 @@
         }
 
         function showScreen(id) {
-            const screens = ['login-screen', 'block-screen', 'level-wait-screen', 'quiz-screen', 'video-reveal-screen', 'one-time-surprise-screen', 'image-surprise-screen', 'image-surprise-screen-3'];
+            const screens = ['login-screen', 'block-screen', 'level-wait-screen', 'quiz-screen', 'checkpoint-screen', 'video-reveal-screen', 'one-time-surprise-screen', 'image-surprise-screen', 'image-surprise-screen-3'];
             screens.forEach(s => {
                 const el = document.getElementById(s);
                 if (s === id) { el.classList.remove('hidden'); el.style.display = 'block'; } 
