@@ -637,5 +637,21 @@
             });
         }
     </script>
+    <script>
+    // Monitor de errores en pantalla para debugging
+    window.onerror = function(msg, url, line) {
+        const errorDiv = document.createElement('div');
+        errorDiv.style.position = 'fixed';
+        errorDiv.style.bottom = '10px';
+        errorDiv.style.left = '10px';
+        errorDiv.style.background = 'red';
+        errorDiv.style.color = 'white';
+        errorDiv.style.padding = '10px';
+        errorDiv.style.zIndex = '9999';
+        errorDiv.innerHTML = "Error: " + msg + " (Línea: " + line + ")";
+        document.body.appendChild(errorDiv);
+        return false;
+    };
+</script>
 </body>
 </html>
